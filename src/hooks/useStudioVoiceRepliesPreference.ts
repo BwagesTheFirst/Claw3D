@@ -26,9 +26,26 @@ export const useStudioVoiceRepliesPreference = ({
     let cancelled = false;
     const gatewayKey = gatewayUrl.trim();
     if (!gatewayKey) {
-      setPreference(defaultStudioVoiceRepliesPreference());
-      setLoaded(true);
-      return;
+      // No gateway URL — try loading with empty key, then fallback to defaults
+      const tryLoad = async () => {
+        try {
+          const settings = await settingsCoordinator.loadSettings({ maxAgeMs: 30_000 });
+          if (cancelled) return;
+          // Try empty key, then any first key found
+          const pref = settings ? resolveVoiceRepliesPreference(settings, "") : null;
+          setPreference(pref ?? defaultStudioVoiceRepliesPreference());
+        } catch {
+          if (!cancelled) setPreference(defaultStudioVoiceRepliesPreference());
+        } finally {
+          if (!cancelled) setLoaded(true);
+        }
+      };
+      void tryLoad();
+      // Safety: ensure loaded is true within 3 seconds regardless
+      const safetyTimer = window.setTimeout(() => {
+        if (!cancelled) setLoaded(true);
+      }, 3000);
+      return () => { cancelled = true; window.clearTimeout(safetyTimer); };
     }
     setLoaded(false);
     const loadPreference = async () => {
@@ -51,9 +68,14 @@ export const useStudioVoiceRepliesPreference = ({
         }
       }
     };
+    // Safety timeout: if loadSettings hangs, force loaded after 5 seconds
+    const safetyTimer = window.setTimeout(() => {
+      if (!cancelled) setLoaded(true);
+    }, 5000);
     void loadPreference();
     return () => {
       cancelled = true;
+      window.clearTimeout(safetyTimer);
     };
   }, [gatewayUrl, settingsCoordinator]);
 

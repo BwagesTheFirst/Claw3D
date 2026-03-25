@@ -11,46 +11,32 @@ import { useBranceClawLive } from "@/hooks/useBranceClawLive";
 
 const DEMO_AGENTS: OfficeAgent[] = [
   {
-    id: "branceclaw",
-    name: "BranceClaw",
+    id: "winsworth",
+    name: "Winsworth",
     status: "working",
-    color: "#f59e0b", // amber -- brand primary
+    color: "#f59e0b",
     item: "globe",
   },
   {
-    id: "roofbot",
-    name: "RoofBot",
-    status: "working",
-    color: "#ef4444", // red -- roofing
-    item: "shield",
-  },
-  {
-    id: "hoa-hunter",
-    name: "HOA Hunter",
-    status: "working",
-    color: "#22c55e", // green -- money / leads
-    item: "camera",
-  },
-  {
-    id: "caso-collect",
-    name: "CASO Collect",
+    id: "caso-sales-mgr",
+    name: "Marcus",
     status: "idle",
-    color: "#3b82f6", // blue -- compliance / docs
+    color: "#3b82f6",
     item: "books",
   },
   {
-    id: "hoa-cloud",
-    name: "HOA Cloud",
+    id: "caso-researcher",
+    name: "Scout",
     status: "idle",
-    color: "#06b6d4", // cyan
-    item: "shield",
+    color: "#22c55e",
+    item: "camera",
   },
   {
-    id: "slotmaster",
-    name: "SlotMaster",
+    id: "caso-outreach",
+    name: "Hayes",
     status: "idle",
-    color: "#ec4899", // pink -- gaming / slots
-    item: "laptop",
+    color: "#06b6d4",
+    item: "shield",
   },
 ];
 

@@ -125,7 +125,6 @@ export function SettingsPanel({
             aria-checked={voiceRepliesEnabled}
             className={`ui-switch self-center ${voiceRepliesEnabled ? "ui-switch--on" : ""}`}
             onClick={() => onVoiceRepliesToggle(!voiceRepliesEnabled)}
-            disabled={!voiceRepliesLoaded}
           >
             <span className="ui-switch-thumb" />
           </button>
@@ -137,7 +136,7 @@ export function SettingsPanel({
           </div>
         </div>
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
-          {voiceRepliesLoaded ? (voiceRepliesEnabled ? "On" : "Off") : "Loading"}
+          {voiceRepliesEnabled ? "On" : "Off"}
         </span>
       </div>
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
@@ -156,7 +155,7 @@ export function SettingsPanel({
                   onVoiceRepliesVoiceChange(voice.id);
                   onVoiceRepliesPreview(voice.id, voice.label);
                 }}
-                disabled={!voiceRepliesLoaded}
+                
                 className={`rounded-lg border px-3 py-2 text-left transition-colors ${
                   selected
                     ? "border-cyan-400/40 bg-cyan-500/12 text-white"
@@ -188,7 +187,7 @@ export function SettingsPanel({
           max="1.2"
           step="0.05"
           value={voiceRepliesSpeed}
-          disabled={!voiceRepliesLoaded}
+          
           onChange={(event) =>
             onVoiceRepliesSpeedChange(Number.parseFloat(event.target.value))
           }

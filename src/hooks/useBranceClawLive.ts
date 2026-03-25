@@ -37,46 +37,11 @@ export type PortfolioAgent = {
 
 const PORTFOLIO: PortfolioAgent[] = [
   {
-    id: "branceclaw",
-    name: "BranceClaw",
+    id: "winsworth",
+    name: "Winsworth",
     color: "#f59e0b", // amber
     item: "globe",
-    auditAliases: ["branceclaw", "main", "default"],
-  },
-  {
-    id: "hoa-hunter",
-    name: "HOA Hunter",
-    color: "#22c55e", // green
-    item: "camera",
-    auditAliases: ["hoa-hunter", "hoa_hunter", "hoahunter"],
-  },
-  {
-    id: "caso-collect",
-    name: "CASO Collect",
-    color: "#3b82f6", // blue
-    item: "books",
-    auditAliases: ["caso-collect", "caso_collect", "casocollect", "casocomply"],
-  },
-  {
-    id: "hoa-cloud",
-    name: "HOA Cloud",
-    color: "#06b6d4", // cyan
-    item: "shield",
-    auditAliases: ["hoa-cloud", "hoa_cloud", "hoacloud"],
-  },
-  {
-    id: "slotmaster",
-    name: "SlotMaster",
-    color: "#ec4899", // pink
-    item: "laptop",
-    auditAliases: ["slotmaster", "slot-master", "slot_master"],
-  },
-  {
-    id: "roofbot",
-    name: "RoofBot",
-    color: "#ef4444", // red
-    item: "shield",
-    auditAliases: ["roofbot", "roof-bot", "roof_bot"],
+    auditAliases: ["branceclaw", "winsworth", "main", "default"],
   },
 ];
 

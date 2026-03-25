@@ -1882,7 +1882,7 @@ export function RetroOffice3D({
   monitorAgentId = null,
   monitorByAgentId = {},
   githubSkill = null,
-  officeTitle = "Claw3D",
+  officeTitle = "BranceClaw HQ",
   officeTitleLoaded = false,
   voiceRepliesEnabled = false,
   voiceRepliesVoiceId = null,

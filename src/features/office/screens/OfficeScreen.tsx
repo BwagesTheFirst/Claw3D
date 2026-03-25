@@ -3199,7 +3199,7 @@ export function OfficeScreen({
   );
   const githubSkill = useMemo<SkillStatusEntry | null>(
     () =>
-      marketplace.skillsReport?.skills.find((skill) => {
+      (marketplace.skillsReport?.skills ?? []).find((skill) => {
         const normalizedKey = skill.skillKey.trim().toLowerCase();
         const normalizedName = skill.name.trim().toLowerCase();
         return normalizedKey === "github" || normalizedName === "github";

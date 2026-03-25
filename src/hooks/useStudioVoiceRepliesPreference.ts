@@ -26,26 +26,9 @@ export const useStudioVoiceRepliesPreference = ({
     let cancelled = false;
     const gatewayKey = gatewayUrl.trim();
     if (!gatewayKey) {
-      // No gateway URL — try loading with empty key, then fallback to defaults
-      const tryLoad = async () => {
-        try {
-          const settings = await settingsCoordinator.loadSettings({ maxAgeMs: 30_000 });
-          if (cancelled) return;
-          // Try empty key, then any first key found
-          const pref = settings ? resolveVoiceRepliesPreference(settings, "") : null;
-          setPreference(pref ?? defaultStudioVoiceRepliesPreference());
-        } catch {
-          if (!cancelled) setPreference(defaultStudioVoiceRepliesPreference());
-        } finally {
-          if (!cancelled) setLoaded(true);
-        }
-      };
-      void tryLoad();
-      // Safety: ensure loaded is true within 3 seconds regardless
-      const safetyTimer = window.setTimeout(() => {
-        if (!cancelled) setLoaded(true);
-      }, 3000);
-      return () => { cancelled = true; window.clearTimeout(safetyTimer); };
+      setPreference(defaultStudioVoiceRepliesPreference());
+      setLoaded(true);
+      return;
     }
     setLoaded(false);
     const loadPreference = async () => {
@@ -68,25 +51,16 @@ export const useStudioVoiceRepliesPreference = ({
         }
       }
     };
-    // Safety timeout: if loadSettings hangs, force loaded after 5 seconds
-    const safetyTimer = window.setTimeout(() => {
-      if (!cancelled) setLoaded(true);
-    }, 5000);
     void loadPreference();
     return () => {
       cancelled = true;
-      window.clearTimeout(safetyTimer);
     };
   }, [gatewayUrl, settingsCoordinator]);
 
   const setEnabled = useCallback(
     (enabled: boolean) => {
-      console.log("[Voice] setEnabled called:", enabled, "gatewayUrl:", gatewayUrl);
       const gatewayKey = gatewayUrl.trim();
-      setPreference((current) => {
-        console.log("[Voice] updating preference:", { ...current, enabled });
-        return { ...current, enabled };
-      });
+      setPreference((current) => ({ ...current, enabled }));
       if (!gatewayKey) return;
       settingsCoordinator.schedulePatch(
         {

@@ -15,7 +15,7 @@ import {
 // storage and document any changes to this threat model in README.md and SECURITY.md.
 const SETTINGS_DIRNAME = "claw3d";
 const SETTINGS_FILENAME = "settings.json";
-const CLAW3D_CONFIG_FILENAME = "claw3d.json";
+const OPENCLAW_CONFIG_FILENAME = "openclaw.json";
 
 export const resolveStudioSettingsPath = () =>
   path.join(resolveStateDir(), SETTINGS_DIRNAME, SETTINGS_FILENAME);
@@ -25,7 +25,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const readOpenclawGatewayDefaults = (): { url: string; token: string } | null => {
   try {
-    const configPath = path.join(resolveStateDir(), CLAW3D_CONFIG_FILENAME);
+    const configPath = path.join(resolveStateDir(), OPENCLAW_CONFIG_FILENAME);
     if (!fs.existsSync(configPath)) return null;
     const raw = fs.readFileSync(configPath, "utf8");
     const parsed = JSON.parse(raw) as unknown;

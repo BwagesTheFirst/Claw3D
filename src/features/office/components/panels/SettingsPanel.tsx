@@ -63,7 +63,7 @@ export function SettingsPanel({
           maxLength={48}
           disabled={!officeTitleLoaded}
           onChange={(event) => onOfficeTitleChange(event.target.value)}
-          placeholder="Brance's Empire"
+          placeholder="Luke Headquarters"
           className="mt-3 w-full rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] uppercase tracking-[0.18em] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <div className="mt-2 text-[10px] text-white/50">
@@ -125,6 +125,7 @@ export function SettingsPanel({
             aria-checked={voiceRepliesEnabled}
             className={`ui-switch self-center ${voiceRepliesEnabled ? "ui-switch--on" : ""}`}
             onClick={() => onVoiceRepliesToggle(!voiceRepliesEnabled)}
+            disabled={!voiceRepliesLoaded}
           >
             <span className="ui-switch-thumb" />
           </button>
@@ -136,7 +137,7 @@ export function SettingsPanel({
           </div>
         </div>
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
-          {voiceRepliesEnabled ? "On" : "Off"}
+          {voiceRepliesLoaded ? (voiceRepliesEnabled ? "On" : "Off") : "Loading"}
         </span>
       </div>
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
@@ -155,7 +156,7 @@ export function SettingsPanel({
                   onVoiceRepliesVoiceChange(voice.id);
                   onVoiceRepliesPreview(voice.id, voice.label);
                 }}
-                
+                disabled={!voiceRepliesLoaded}
                 className={`rounded-lg border px-3 py-2 text-left transition-colors ${
                   selected
                     ? "border-cyan-400/40 bg-cyan-500/12 text-white"
@@ -187,7 +188,7 @@ export function SettingsPanel({
           max="1.2"
           step="0.05"
           value={voiceRepliesSpeed}
-          
+          disabled={!voiceRepliesLoaded}
           onChange={(event) =>
             onVoiceRepliesSpeedChange(Number.parseFloat(event.target.value))
           }

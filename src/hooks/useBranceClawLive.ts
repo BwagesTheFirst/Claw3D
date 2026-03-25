@@ -7,6 +7,8 @@
  * for real-time WebSocket events, mapping the data into the OfficeAgent
  * format expected by RetroOffice3D.
  *
+ * Agents are fetched dynamically from /api/agents instead of a hardcoded list.
+ *
  * If the API is unreachable, all agents default to "idle" and the hook
  * sets `connected` to false so the UI can degrade gracefully.
  */
@@ -14,6 +16,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BranceClawApiClient,
+  type BranceClawAgent,
   type BranceClawAuditEntry,
   type BranceClawMessage,
   type BranceClawStatus,
@@ -23,7 +26,7 @@ import {
 import type { OfficeAgent } from "@/features/retro-office/core/types";
 
 // ---------------------------------------------------------------------------
-// Portfolio definition — the six agents that Brance actually runs
+// Portfolio agent type — mirrors BranceClawAgent with resolved auditAliases
 // ---------------------------------------------------------------------------
 
 export type PortfolioAgent = {
@@ -34,16 +37,6 @@ export type PortfolioAgent = {
   /** BranceClaw agent_id values that map to this portfolio agent in audit logs */
   auditAliases: string[];
 };
-
-const PORTFOLIO: PortfolioAgent[] = [
-  {
-    id: "winsworth",
-    name: "Winsworth",
-    color: "#f59e0b", // amber
-    item: "globe",
-    auditAliases: ["branceclaw", "winsworth", "main", "default"],
-  },
-];
 
 // ---------------------------------------------------------------------------
 // Activity window: agent is "working" if it had audit activity within this
@@ -91,10 +84,15 @@ export type BranceClawLiveData = {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Build auditAliases for an agent: the agent id itself, plus common variants */
+function buildAliases(id: string): string[] {
+  return [id, id.toLowerCase()];
+}
+
 /** Build a reverse lookup: audit agent_id -> portfolio agent id */
-function buildAuditAliasMap(): Map<string, string> {
+function buildAuditAliasMap(portfolio: PortfolioAgent[]): Map<string, string> {
   const map = new Map<string, string>();
-  for (const agent of PORTFOLIO) {
+  for (const agent of portfolio) {
     for (const alias of agent.auditAliases) {
       map.set(alias.toLowerCase(), agent.id);
     }
@@ -102,17 +100,18 @@ function buildAuditAliasMap(): Map<string, string> {
   return map;
 }
 
-const ALIAS_MAP = buildAuditAliasMap();
-
-function resolveAgentId(auditAgentId: string): string | null {
+function resolveAgentId(
+  auditAgentId: string,
+  aliasMap: Map<string, string>,
+): string | null {
   const normalized = (auditAgentId ?? "").trim().toLowerCase();
   if (!normalized) return null;
   // Direct match
-  const direct = ALIAS_MAP.get(normalized);
+  const direct = aliasMap.get(normalized);
   if (direct) return direct;
   // Partial match — try stripping common prefixes
   let partialMatch: string | null = null;
-  ALIAS_MAP.forEach((id, alias) => {
+  aliasMap.forEach((id, alias) => {
     if (partialMatch) return;
     if (normalized.includes(alias) || alias.includes(normalized)) {
       partialMatch = id;
@@ -155,10 +154,12 @@ function messageToFeedEvent(
 function auditToFeedEvent(
   entry: BranceClawAuditEntry,
   index: number,
+  portfolio: PortfolioAgent[],
+  aliasMap: Map<string, string>,
 ): BranceClawLiveData["feedEvents"][number] | null {
-  const portfolioId = resolveAgentId(entry.agent_id);
+  const portfolioId = resolveAgentId(entry.agent_id, aliasMap);
   const agent = portfolioId
-    ? PORTFOLIO.find((a) => a.id === portfolioId)
+    ? portfolio.find((a) => a.id === portfolioId)
     : null;
   const name = agent?.name ?? entry.agent_id ?? "System";
   const action = (entry.action ?? "").trim();
@@ -173,6 +174,17 @@ function auditToFeedEvent(
     text,
     ts: auditTimestamp(entry),
     kind: "status",
+  };
+}
+
+/** Map a BranceClawAgent from the API to the PortfolioAgent format */
+function apiAgentToPortfolio(a: BranceClawAgent): PortfolioAgent {
+  return {
+    id: a.id,
+    name: a.name,
+    color: a.color,
+    item: a.item,
+    auditAliases: buildAliases(a.id),
   };
 }
 
@@ -202,6 +214,8 @@ export function useBranceClawLive(options?: {
   const [messages, setMessages] = useState<BranceClawMessage[]>([]);
   const [tasks, setTasks] = useState<BranceClawTask[]>([]);
   const [wsEvents, setWsEvents] = useState<BranceClawWsEvent[]>([]);
+  /** Dynamic portfolio — loaded from /api/agents */
+  const [portfolio, setPortfolio] = useState<PortfolioAgent[]>([]);
 
   // --- Client singleton (stable across renders) ---
   const clientRef = useRef<BranceClawApiClient | null>(null);
@@ -245,11 +259,12 @@ export function useBranceClawLive(options?: {
     if (!client) return;
 
     try {
-      const [statusRes, auditRes, messagesRes, tasksRes] = await Promise.allSettled([
+      const [statusRes, auditRes, messagesRes, tasksRes, agentsRes] = await Promise.allSettled([
         client.fetchStatus(),
         client.fetchAudit(50),
         client.fetchMessages(50),
         client.fetchTasks(),
+        client.fetchAgents(),
       ]);
 
       if (statusRes.status === "fulfilled") {
@@ -263,6 +278,9 @@ export function useBranceClawLive(options?: {
       }
       if (tasksRes.status === "fulfilled") {
         setTasks(tasksRes.value);
+      }
+      if (agentsRes.status === "fulfilled" && agentsRes.value.length > 0) {
+        setPortfolio(agentsRes.value.map(apiAgentToPortfolio));
       }
 
       // If at least the status call succeeded, we consider ourselves connected
@@ -286,13 +304,14 @@ export function useBranceClawLive(options?: {
   const { agents, runCountByAgentId, lastSeenByAgentId, deskHoldByAgentId } =
     useMemo(() => {
       const now = Date.now();
+      const aliasMap = buildAuditAliasMap(portfolio);
 
       // Tally activity per portfolio agent
       const latestTimestamp = new Map<string, number>();
       const runCounts = new Map<string, number>();
 
       for (const entry of auditEntries) {
-        const portfolioId = resolveAgentId(entry.agent_id);
+        const portfolioId = resolveAgentId(entry.agent_id, aliasMap);
         if (!portfolioId) continue;
         const ts = auditTimestamp(entry);
         const current = latestTimestamp.get(portfolioId) ?? 0;
@@ -311,14 +330,14 @@ export function useBranceClawLive(options?: {
               ? payload.agentId
               : null;
         if (!agentIdRaw) continue;
-        const portfolioId = resolveAgentId(agentIdRaw);
+        const portfolioId = resolveAgentId(agentIdRaw, aliasMap);
         if (!portfolioId) continue;
         const ts = typeof ev.ts === "number" ? ev.ts : now;
         const current = latestTimestamp.get(portfolioId) ?? 0;
         if (ts > current) latestTimestamp.set(portfolioId, ts);
       }
 
-      const officeAgents: OfficeAgent[] = PORTFOLIO.map((pa) => {
+      const officeAgents: OfficeAgent[] = portfolio.map((pa) => {
         const lastSeen = latestTimestamp.get(pa.id) ?? 0;
         const recentlyActive = lastSeen > 0 && now - lastSeen < ACTIVITY_WINDOW_MS;
         const status: OfficeAgent["status"] = connected
@@ -339,7 +358,7 @@ export function useBranceClawLive(options?: {
       const lsById: Record<string, number> = {};
       const dhById: Record<string, boolean> = {};
 
-      for (const pa of PORTFOLIO) {
+      for (const pa of portfolio) {
         const count = runCounts.get(pa.id) ?? 0;
         const lastSeen = latestTimestamp.get(pa.id) ?? 0;
         rcById[pa.id] = count;
@@ -354,10 +373,12 @@ export function useBranceClawLive(options?: {
         lastSeenByAgentId: lsById,
         deskHoldByAgentId: dhById,
       };
-    }, [auditEntries, connected, wsEvents]);
+    }, [auditEntries, connected, wsEvents, portfolio]);
 
   // --- Build feed events from messages + audit ---
   const feedEvents = useMemo(() => {
+    const aliasMap = buildAuditAliasMap(portfolio);
+
     const fromMessages = messages
       .slice(0, 20)
       .map((m, i) => messageToFeedEvent(m, i))
@@ -365,7 +386,7 @@ export function useBranceClawLive(options?: {
 
     const fromAudit = auditEntries
       .slice(0, 20)
-      .map((e, i) => auditToFeedEvent(e, i))
+      .map((e, i) => auditToFeedEvent(e, i, portfolio, aliasMap))
       .filter((e): e is NonNullable<typeof e> => e !== null);
 
     // Merge and sort newest first, cap at 20
@@ -380,7 +401,7 @@ export function useBranceClawLive(options?: {
       seen.add(e.id);
       return true;
     });
-  }, [messages, auditEntries]);
+  }, [messages, auditEntries, portfolio]);
 
   return {
     connected,

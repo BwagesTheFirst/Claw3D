@@ -119,6 +119,17 @@ export type BranceClawAgentSummary = {
   status: string;
 };
 
+export type BranceClawAgent = {
+  id: string;
+  name: string;
+  role: string;
+  company?: string;
+  color: string;
+  item: string;
+  status: string;
+  enabled: boolean;
+};
+
 export type BranceClawHoneyDoItem = {
   id: number;
   text: string;
@@ -274,8 +285,8 @@ export class BranceClawApiClient {
     });
   }
 
-  async fetchAgents(): Promise<BranceClawAgentSummary[]> {
-    return this.get<BranceClawAgentSummary[]>("/api/agents");
+  async fetchAgents(): Promise<BranceClawAgent[]> {
+    return this.get<BranceClawAgent[]>("/api/agents");
   }
 
   async fetchHoneyDoList(): Promise<BranceClawHoneyDoItem[]> {

@@ -20,7 +20,7 @@ export type SkillInstallOption = {
   bins: string[];
 };
 
-export type RemovableSkillSource = "openclaw-managed" | "openclaw-workspace";
+export type RemovableSkillSource = "claw3d-managed" | "claw3d-workspace";
 
 export type SkillStatusEntry = {
   name: string;

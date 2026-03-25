@@ -28,12 +28,12 @@ function OfficeLoadingFallback() {
 }
 
 export default function OfficePage() {
-  const showOpenClawConsole = readDebugFlag(process.env.DEBUG);
+  const showDebugConsole = readDebugFlag(process.env.DEBUG);
 
   return (
     <AgentStoreProvider>
       <Suspense fallback={<OfficeLoadingFallback />}>
-        <OfficeScreen showOpenClawConsole={showOpenClawConsole} />
+        <OfficeScreen showDebugConsole={showDebugConsole} />
       </Suspense>
     </AgentStoreProvider>
   );

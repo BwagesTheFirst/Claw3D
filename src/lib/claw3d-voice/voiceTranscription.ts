@@ -145,7 +145,7 @@ export const sanitizeVoiceFileName = (
 export const buildVoiceTranscriptionErrorMessage = (
   decision: MediaUnderstandingDecision | null | undefined,
 ): string => {
-  if (!decision) return "OpenClaw did not return a transcript.";
+  if (!decision) return "BranceClaw did not return a transcript.";
   const outcome = decision.outcome?.trim() || "unknown";
   const reasons = (decision.attachments ?? [])
     .flatMap((attachment) => attachment.attempts ?? [])
@@ -154,15 +154,15 @@ export const buildVoiceTranscriptionErrorMessage = (
   const detail = reasons[0] ? ` ${reasons[0]}` : "";
   switch (outcome) {
     case "disabled":
-      return `OpenClaw audio transcription is disabled.${detail}`.trim();
+      return `BranceClaw audio transcription is disabled.${detail}`.trim();
     case "no-attachment":
-      return "OpenClaw did not receive any audio to transcribe.";
+      return "BranceClaw did not receive any audio to transcribe.";
     case "scope-deny":
-      return `OpenClaw blocked audio transcription for this request.${detail}`.trim();
+      return `BranceClaw blocked audio transcription for this request.${detail}`.trim();
     case "skipped":
-      return `OpenClaw skipped audio transcription.${detail}`.trim();
+      return `BranceClaw skipped audio transcription.${detail}`.trim();
     default:
-      return `OpenClaw did not return a transcript.${detail}`.trim();
+      return `BranceClaw did not return a transcript.${detail}`.trim();
   }
 };
 
@@ -192,7 +192,7 @@ const resolveOpenClawPackageRoot = (): string => {
   if (configuredCandidate) {
     const indexPath = path.join(configuredCandidate, OPENCLAW_DIST_INDEX_RELATIVE_PATH);
     if (fs.existsSync(indexPath)) return configuredCandidate;
-    throw new Error("OPENCLAW_PACKAGE_ROOT does not point to a valid OpenClaw installation.");
+    throw new Error("OPENCLAW_PACKAGE_ROOT does not point to a valid BranceClaw installation.");
   }
 
   const installedCandidate = resolveInstalledOpenClawPackageRoot();
@@ -202,7 +202,7 @@ const resolveOpenClawPackageRoot = (): string => {
   }
 
   throw new Error(
-    "OpenClaw could not be resolved from the current Node runtime. Install the `openclaw` package or set OPENCLAW_PACKAGE_ROOT.",
+    "BranceClaw could not be resolved from the current Node runtime. Install the `openclaw` package or set OPENCLAW_PACKAGE_ROOT.",
   );
 };
 
@@ -226,7 +226,7 @@ const loadOpenClawSdk = async (): Promise<OpenClawTranscriptionSdk> => {
     }
 
     if (!loadConfig) {
-      throw new Error("The installed OpenClaw runtime does not expose a loadConfig() module.");
+      throw new Error("The installed BranceClaw runtime does not expose a loadConfig() module.");
     }
 
     const runnerCandidates = distEntries.filter((entry) => /^runner-.*\.js$/.test(entry));
@@ -253,7 +253,7 @@ const loadOpenClawSdk = async (): Promise<OpenClawTranscriptionSdk> => {
       }
     }
 
-    throw new Error("The installed OpenClaw runtime does not expose the audio transcription runner.");
+    throw new Error("The installed BranceClaw runtime does not expose the audio transcription runner.");
   })().catch((error) => {
     sdkPromise = null;
     throw error;
@@ -269,7 +269,7 @@ export const transcribeVoiceWithOpenClaw = async (params: {
   const sdk = await loadOpenClawSdk();
   const cfg = sdk.loadConfig();
   if (cfg.tools?.media?.audio?.enabled === false) {
-    throw new Error("OpenClaw audio transcription is disabled.");
+    throw new Error("BranceClaw audio transcription is disabled.");
   }
 
   const mimeType = normalizeVoiceMimeType(params.mimeType);

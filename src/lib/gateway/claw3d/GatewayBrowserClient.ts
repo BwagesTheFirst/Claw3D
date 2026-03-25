@@ -1,5 +1,5 @@
-// Adapted from `openclaw/openclaw` `ui/src/ui/gateway.ts`.
-// Source license: MIT. Last verified against OpenClaw 2026.2.12
+// Adapted from upstream gateway client `ui/src/ui/gateway.ts`.
+// Source license: MIT. Last verified against Claw3D 2026.2.12
 // (`f9e444dd56ccfc2271e8ae1729b7a14a55e1c11e`).
 // Update this file via `npm run sync:gateway-client -- /path/to/gateway.ts` and record
 // provenance changes in `THIRD_PARTY_CODE.md` whenever the upstream source changes.
@@ -7,7 +7,7 @@ import { getPublicKeyAsync, signAsync, utils } from "@noble/ed25519";
 import { GatewayResponseError } from "@/lib/gateway/errors";
 
 const GATEWAY_CLIENT_NAMES = {
-  CONTROL_UI: "openclaw-control-ui",
+  CONTROL_UI: "claw3d-control-ui",
 } as const;
 
 const GATEWAY_CLIENT_MODES = {
@@ -111,7 +111,7 @@ type DeviceAuthStore = {
   tokens: Record<string, DeviceAuthEntry>;
 };
 
-const DEVICE_AUTH_STORAGE_KEY = "openclaw.device.auth.v1";
+const DEVICE_AUTH_STORAGE_KEY = "claw3d.device.auth.v1";
 
 function normalizeAuthScope(scope: string | undefined): string {
   const trimmed = scope?.trim();
@@ -229,7 +229,7 @@ type DeviceIdentity = {
   privateKey: string;
 };
 
-const DEVICE_IDENTITY_STORAGE_KEY = "openclaw-device-identity-v1";
+const DEVICE_IDENTITY_STORAGE_KEY = "claw3d-device-identity-v1";
 
 export function clearGatewayBrowserSessionStorage() {
   try {

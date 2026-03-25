@@ -61,7 +61,7 @@ const createSkillsReport = (): SkillStatusReport => ({
     {
       name: "github",
       description: "GitHub integration",
-      source: "openclaw-workspace",
+      source: "claw3d-workspace",
       bundled: false,
       filePath: "/tmp/workspace/skills/github/SKILL.md",
       baseDir: "/tmp/workspace/skills/github",
@@ -78,7 +78,7 @@ const createSkillsReport = (): SkillStatusReport => ({
     {
       name: "browser",
       description: "Browser automation",
-      source: "openclaw-bundled",
+      source: "claw3d-bundled",
       bundled: true,
       filePath: "/tmp/skills/browser/SKILL.md",
       baseDir: "/tmp/skills/browser",
@@ -619,7 +619,7 @@ describe("AgentSettingsPanel", () => {
 
     expect(onRemoveSkill).toHaveBeenCalledWith({
       skillKey: "github",
-      source: "openclaw-workspace",
+      source: "claw3d-workspace",
       baseDir: "/tmp/workspace/skills/github",
     });
   });

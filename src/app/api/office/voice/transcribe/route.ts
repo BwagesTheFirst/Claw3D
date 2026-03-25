@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { transcribeVoiceWithOpenClaw } from "@/lib/openclaw/voiceTranscription";
+import { transcribeVoiceWithOpenClaw } from "@/lib/claw3d-voice/voiceTranscription";
 
 export const runtime = "nodejs";
 

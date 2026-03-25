@@ -1,0 +1,69 @@
+{
+  "$schema": "https://branceclaw.ai/schemas/agents-seed.json",
+  "description": "Default BranceClaw HQ agent roster. These agents should be created in the gateway to populate the 3D office.",
+  "agents": {
+    "list": [
+      {
+        "id": "branceclaw",
+        "name": "BranceClaw",
+        "default": true,
+        "role": "Personal AI Assistant — the boss desk. General triage, scheduling, orchestration.",
+        "identity": {
+          "name": "BranceClaw",
+          "emoji": "🦖",
+          "theme": "amber"
+        }
+      },
+      {
+        "id": "hoa-hunter",
+        "name": "HOA Hunter",
+        "role": "Lead Generation Engine — HOA board member data, violation scraping, community research.",
+        "identity": {
+          "name": "HOA Hunter",
+          "emoji": "🎯",
+          "theme": "green"
+        }
+      },
+      {
+        "id": "caso-collect",
+        "name": "CASO Collect",
+        "role": "Litigation Automation — document compliance, legal filings, collections tracking.",
+        "identity": {
+          "name": "CASO Collect",
+          "emoji": "⚖️",
+          "theme": "blue"
+        }
+      },
+      {
+        "id": "hoa-cloud",
+        "name": "HOA Cloud",
+        "role": "HOA Management Platform — portal sync, board packets, violation notices, community ops.",
+        "identity": {
+          "name": "HOA Cloud",
+          "emoji": "☁️",
+          "theme": "cyan"
+        }
+      },
+      {
+        "id": "slotmaster",
+        "name": "SlotMaster",
+        "role": "Game Generator — slot machine design, reel physics, theme packs, QA testing.",
+        "identity": {
+          "name": "SlotMaster",
+          "emoji": "🎰",
+          "theme": "pink"
+        }
+      },
+      {
+        "id": "roofbot",
+        "name": "RoofBot",
+        "role": "Roofing CRM — estimates, permits, inspections, crew scheduling, insurance supplements.",
+        "identity": {
+          "name": "RoofBot",
+          "emoji": "🏠",
+          "theme": "red"
+        }
+      }
+    ]
+  }
+}

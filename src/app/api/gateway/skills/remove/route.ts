@@ -13,8 +13,8 @@ import { loadStudioSettings } from "@/lib/studio/settings-store";
 export const runtime = "nodejs";
 
 const REMOVABLE_SOURCES = new Set<RemovableSkillSource>([
-  "openclaw-managed",
-  "openclaw-workspace",
+  "claw3d-managed",
+  "claw3d-workspace",
 ]);
 
 const normalizeRequired = (value: unknown, field: string): string => {

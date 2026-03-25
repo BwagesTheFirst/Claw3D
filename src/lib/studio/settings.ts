@@ -270,7 +270,7 @@ const normalizeOptionalIsoString = (
   return trimmed ? trimmed : null;
 };
 
-const DEFAULT_OFFICE_TITLE = "Luke Headquarters";
+const DEFAULT_OFFICE_TITLE = "Claw3D";
 
 const normalizeOfficeTitle = (
   value: unknown,

@@ -126,7 +126,7 @@ vi.mock("@/lib/skills/remove", () => ({
   removeSkillFromGateway: vi.fn(async () => ({
     removed: true,
     removedPath: "/tmp/workspace/skills/browser",
-    source: "openclaw-workspace",
+    source: "claw3d-workspace",
   })),
 }));
 
@@ -266,7 +266,7 @@ describe("useAgentSettingsMutationController", () => {
     mockedRemoveSkillFromGateway.mockResolvedValue({
       removed: true,
       removedPath: "/tmp/workspace/skills/browser",
-      source: "openclaw-workspace",
+      source: "claw3d-workspace",
     });
     mockedUpdateSkill.mockResolvedValue({
       ok: true,
@@ -616,7 +616,7 @@ describe("useAgentSettingsMutationController", () => {
         {
           name: "browser",
           description: "",
-          source: "openclaw-workspace",
+          source: "claw3d-workspace",
           bundled: false,
           filePath: "/tmp/workspace/skills/browser/SKILL.md",
           baseDir: "/tmp/workspace/skills/browser",
@@ -648,7 +648,7 @@ describe("useAgentSettingsMutationController", () => {
     await act(async () => {
       await ctx.getValue().handleRemoveSkill("agent-1", {
         skillKey: "browser",
-        source: "openclaw-workspace",
+        source: "claw3d-workspace",
         baseDir: "/tmp/workspace/skills/browser",
       });
     });
@@ -656,7 +656,7 @@ describe("useAgentSettingsMutationController", () => {
     expect(mockedRemoveSkillFromGateway).toHaveBeenCalledWith(
       expect.objectContaining({
         skillKey: "browser",
-        source: "openclaw-workspace",
+        source: "claw3d-workspace",
         baseDir: "/tmp/workspace/skills/browser",
         workspaceDir: "/tmp/workspace",
         managedSkillsDir: "/tmp/skills",
@@ -866,7 +866,7 @@ describe("useAgentSettingsMutationController", () => {
         {
           name: "apple-notes",
           description: "",
-          source: "openclaw-managed",
+          source: "claw3d-managed",
           bundled: false,
           filePath: "/tmp/skills/apple-notes/SKILL.md",
           baseDir: "/tmp/skills/apple-notes",

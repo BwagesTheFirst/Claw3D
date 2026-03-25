@@ -81,7 +81,7 @@ describe("agent state route", () => {
 
     mockedSpawnSync.mockReturnValueOnce({
       status: 0,
-      stdout: JSON.stringify({ trashDir: "/home/ubuntu/.openclaw/trash/x", moved: [] }),
+      stdout: JSON.stringify({ trashDir: "/home/ubuntu/.claw3d/trash/x", moved: [] }),
       stderr: "",
       error: undefined,
     } as never);
@@ -161,7 +161,7 @@ describe("agent state route", () => {
 
     mockedSpawnSync.mockReturnValueOnce({
       status: 0,
-      stdout: JSON.stringify({ trashDir: "/home/ubuntu/.openclaw/trash/x", moved: [] }),
+      stdout: JSON.stringify({ trashDir: "/home/ubuntu/.claw3d/trash/x", moved: [] }),
       stderr: "",
       error: undefined,
     } as never);

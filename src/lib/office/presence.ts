@@ -18,7 +18,7 @@ export type OfficePresenceSnapshot = {
   agents: OfficeAgentPresence[];
 };
 
-const OPENCLAW_CONFIG_FILENAME = "openclaw.json";
+const CLAW3D_CONFIG_FILENAME = "claw3d.json";
 
 const stableHash = (input: string): number => {
   let hash = 0;
@@ -37,7 +37,7 @@ const resolveStateFromSeed = (seed: number): OfficeAgentState => {
 };
 
 export const loadOfficePresenceSnapshot = (workspaceId: string): OfficePresenceSnapshot => {
-  const configPath = path.join(resolveStateDir(), OPENCLAW_CONFIG_FILENAME);
+  const configPath = path.join(resolveStateDir(), CLAW3D_CONFIG_FILENAME);
   const timestamp = new Date().toISOString();
   if (!fs.existsSync(configPath)) {
     return {

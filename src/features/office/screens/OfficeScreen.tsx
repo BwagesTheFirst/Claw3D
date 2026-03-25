@@ -165,9 +165,21 @@ const ITEMS = [
 const GYM_WORKOUT_LATCH_MS = 60_000;
 const MAIN_AGENT_ID = "main";
 const MAX_OPENCLAW_LOG_ENTRIES = 200;
+
+/**
+ * Standalone BranceClaw agent seeds — loaded when no gateway is available so
+ * the 3D office renders with agents at their desks immediately.
+ */
+const BRANCECLAW_STANDALONE_AGENTS: import("@/features/agents/state/store").AgentStoreSeed[] = [
+  { agentId: "main", name: "BranceClaw", sessionKey: "standalone-main" },
+  { agentId: "roofbot", name: "RoofBot", sessionKey: "standalone-roofbot" },
+  { agentId: "hoa-hunter", name: "HOA Hunter", sessionKey: "standalone-hoa-hunter" },
+  { agentId: "casocomply", name: "CasoComply", sessionKey: "standalone-casocomply" },
+  { agentId: "codemonkey", name: "CodeMonkey", sessionKey: "standalone-codemonkey" },
+];
 const MAX_OPENCLAW_AGENT_OUTPUT_LINES = 12;
 
-type OpenClawLogEntry = {
+type DebugLogEntry = {
   id: string;
   timestamp: string;
   eventName: string;
@@ -206,7 +218,7 @@ type PhoneCallSpeakPayload = {
   scenario: MockPhoneCallScenario;
 };
 
-const createOpenClawLogEntry = (params: {
+const createDebugLogEntry = (params: {
   eventName: string;
   eventKind: string;
   summary: string;
@@ -216,9 +228,9 @@ const createOpenClawLogEntry = (params: {
   thinkingText?: string | null;
   streamText?: string | null;
   toolText?: string | null;
-}): OpenClawLogEntry => ({
+}): DebugLogEntry => ({
   id: randomUUID(),
-  timestamp: formatOpenClawTimestamp(Date.now()),
+  timestamp: formatDebugTimestamp(Date.now()),
   eventName: params.eventName,
   eventKind: params.eventKind,
   summary: params.summary,
@@ -230,7 +242,7 @@ const createOpenClawLogEntry = (params: {
   payloadText: safeJsonStringify(params.payload ?? null),
 });
 
-const formatOpenClawTimestamp = (timestampMs: number) => {
+const formatDebugTimestamp = (timestampMs: number) => {
   const date = new Date(timestampMs);
   const hh = String(date.getHours()).padStart(2, "0");
   const mm = String(date.getMinutes()).padStart(2, "0");
@@ -239,7 +251,7 @@ const formatOpenClawTimestamp = (timestampMs: number) => {
   return `${hh}:${mm}:${ss}.${ms}`;
 };
 
-const formatOpenClawValue = (value: string | null | undefined) => {
+const formatDebugValue = (value: string | null | undefined) => {
   const trimmed = value?.trim() ?? "";
   return trimmed || "-";
 };
@@ -309,7 +321,7 @@ const safeJsonStringify = (value: unknown) => {
 const escapeRegExp = (value: string) =>
   value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const renderOpenClawHighlightedText = (
+const renderHighlightedText = (
   value: string,
   query: string,
 ): ReactNode => {
@@ -336,7 +348,7 @@ const resolveMessageRole = (message: unknown) =>
     ? ((message as Record<string, unknown>).role ?? null)
     : null;
 
-const formatOpenClawEventLogEntry = (event: EventFrame): OpenClawLogEntry => {
+const formatEventLogEntry = (event: EventFrame): DebugLogEntry => {
   const eventKind = classifyGatewayEventKind(event.event);
   const baseSummary = `seq=${event.seq ?? "-"} stateVersion=${safeJsonStringify(event.stateVersion ?? null)}`;
   let summary = baseSummary;
@@ -391,7 +403,7 @@ const formatOpenClawEventLogEntry = (event: EventFrame): OpenClawLogEntry => {
     }
   }
 
-  return createOpenClawLogEntry({
+  return createDebugLogEntry({
     eventName: event.event,
     eventKind,
     summary,
@@ -702,11 +714,11 @@ const inferRunningFromAgentSessions = async (params: {
 };
 
 type OfficeScreenProps = {
-  showOpenClawConsole?: boolean;
+  showDebugConsole?: boolean;
 };
 
 export function OfficeScreen({
-  showOpenClawConsole = true,
+  showDebugConsole = true,
 }: OfficeScreenProps) {
   const searchParams = useSearchParams();
   const debugEnabled = searchParams.get("officeDebug") === "1";
@@ -733,6 +745,7 @@ export function OfficeScreen({
     useAgentStore();
   const [agentsLoaded, setAgentsLoaded] = useState(false);
   const [didAttemptGatewayConnect, setDidAttemptGatewayConnect] = useState(false);
+  const standaloneSeededRef = useRef(false);
   const [clockTick, setClockTick] = useState(0);
   const [debugRows, setDebugRows] = useState<OfficeDebugRow[]>([]);
   const [feedEvents, setFeedEvents] = useState<OfficeFeedEvent[]>([]);
@@ -754,13 +767,13 @@ export function OfficeScreen({
   const deskMonitorCacheRef = useRef<
     Map<string, { agent: AgentState; monitor: OfficeDeskMonitor }>
   >(new Map());
-  const [openClawLogEntries, setOpenClawLogEntries] = useState<
-    OpenClawLogEntry[]
+  const [debugLogEntries, setDebugLogEntries] = useState<
+    DebugLogEntry[]
   >([]);
-  const [openClawConsoleCollapsed, setOpenClawConsoleCollapsed] =
+  const [debugConsoleCollapsed, setDebugConsoleCollapsed] =
     useState(true);
-  const [openClawConsoleSearch, setOpenClawConsoleSearch] = useState("");
-  const [openClawConsoleCopyStatus, setOpenClawConsoleCopyStatus] = useState<
+  const [debugConsoleSearch, setDebugConsoleSearch] = useState("");
+  const [debugConsoleCopyStatus, setDebugConsoleCopyStatus] = useState<
     "idle" | "copied" | "error"
   >("idle");
   const [officeTriggerState, setOfficeTriggerState] = useState(() =>
@@ -1415,7 +1428,7 @@ export function OfficeScreen({
       );
       if (!agent) return;
       const confirmed = window.confirm(
-        `Delete ${agent.name}? This removes the agent record from OpenClaw and clears its scheduled automations. Claw3D will not touch workspace files.`,
+        `Delete ${agent.name}? This removes the agent record from BranceClaw and clears its scheduled automations. Claw3D will not touch workspace files.`,
       );
       if (!confirmed) return;
 
@@ -1584,13 +1597,13 @@ export function OfficeScreen({
           }
           // Do not replay movement directives from history refresh.
           // History can include old transport commands; replaying them causes auto-walks on load.
-          setOpenClawLogEntries((previous) => {
+          setDebugLogEntries((previous) => {
             const next = [
               ...previous,
-              createOpenClawLogEntry({
+              createDebugLogEntry({
                 eventName: "history-refresh",
                 eventKind: "derived",
-                summary: `session=${requestedSessionKey} reason=${params.reason} lastUser=${formatOpenClawValue(lastUser)} lastAssistant=${formatOpenClawValue(derived.lastAssistant)}`,
+                summary: `session=${requestedSessionKey} reason=${params.reason} lastUser=${formatDebugValue(lastUser)} lastAssistant=${formatDebugValue(derived.lastAssistant)}`,
                 messageText: lastUser || null,
                 streamText: derived.lastAssistant ?? null,
                 payload: {
@@ -1616,10 +1629,10 @@ export function OfficeScreen({
             );
           }
         } catch (error) {
-          setOpenClawLogEntries((previous) => {
+          setDebugLogEntries((previous) => {
             const next = [
               ...previous,
-              createOpenClawLogEntry({
+              createDebugLogEntry({
                 eventName: "history-refresh",
                 eventKind: "error",
                 summary: `session=${requestedSessionKey} reason=${params.reason} refresh failed`,
@@ -1752,6 +1765,9 @@ export function OfficeScreen({
 
   useEffect(() => {
     if (status === "disconnected") {
+      // In standalone mode (no gateway ever connected), skip the full reset
+      // so the seeded BranceClaw agents are not wiped.
+      if (standaloneSeededRef.current) return;
       connectionEpochRef.current += 1;
       setAgentsLoaded(false);
       setCreateAgentWizardOpen(false);
@@ -1771,6 +1787,18 @@ export function OfficeScreen({
       lastGatewayActivityAtRef.current = 0;
     }
   }, [hydrateAgents, status]);
+
+  // ── Standalone mode: seed agents when no gateway is available so the
+  //    3D office renders immediately with BranceClaw agents at desks. ──
+  useEffect(() => {
+    if (standaloneSeededRef.current) return;
+    if (status === "connected") return;           // gateway connected, skip
+    if (status === "connecting") return;           // give it a chance
+    // status is "disconnected" — seed standalone agents
+    standaloneSeededRef.current = true;
+    hydrateAgents(BRANCECLAW_STANDALONE_AGENTS, "main");
+    setAgentsLoaded(true);
+  }, [status, hydrateAgents]);
 
   useEffect(() => {
     if (!agentsLoaded) return;
@@ -1883,8 +1911,8 @@ export function OfficeScreen({
     );
     const unsubscribeEvent = client.onEvent((event) => {
       lastGatewayActivityAtRef.current = Date.now();
-      setOpenClawLogEntries((previous) => {
-        const next = [...previous, formatOpenClawEventLogEntry(event)];
+      setDebugLogEntries((previous) => {
+        const next = [...previous, formatEventLogEntry(event)];
         return next.slice(-MAX_OPENCLAW_LOG_ENTRIES);
       });
       refreshRecentTransportSessionHistory(event);
@@ -2662,10 +2690,10 @@ export function OfficeScreen({
       if (!trimmed) return;
 
       const intentSnapshot = resolveOfficeIntentSnapshot(trimmed);
-      setOpenClawLogEntries((previous) => {
+      setDebugLogEntries((previous) => {
         const next = [
           ...previous,
-          createOpenClawLogEntry({
+          createDebugLogEntry({
             eventName: "office-intent",
             eventKind: "derived",
             summary: `agent=${agentId} gym=${intentSnapshot.gym?.source ?? "-"} qa=${intentSnapshot.qa ?? "-"} github=${intentSnapshot.github ?? "-"} desk=${intentSnapshot.desk ?? "-"} text=${intentSnapshot.text?.phase ?? "-"}`,
@@ -2839,7 +2867,7 @@ export function OfficeScreen({
       }
       const transcript = result?.transcript?.trim() ?? "";
       if (!transcript) {
-        throw new Error("OpenClaw returned an empty transcript.");
+        throw new Error("BranceClaw returned an empty transcript.");
       }
       return transcript;
     },
@@ -3022,7 +3050,7 @@ export function OfficeScreen({
     state.agents,
     workingUntilByAgentId,
   ]);
-  const openClawLiveStateText = useMemo(() => {
+  const debugLiveStateText = useMemo(() => {
     const lines = ["== LIVE OPENCLAW STATE =="];
     if (state.agents.length === 0) {
       lines.push("No agents loaded yet.");
@@ -3036,10 +3064,10 @@ export function OfficeScreen({
         `status=${agent.status} runId=${agent.runId ?? "-"} session=${agent.sessionKey}`,
       );
       lines.push(
-        `lastActivity=${agent.lastActivityAt ? formatOpenClawTimestamp(agent.lastActivityAt) : "-"} lastAssistant=${agent.lastAssistantMessageAt ? formatOpenClawTimestamp(agent.lastAssistantMessageAt) : "-"}`,
+        `lastActivity=${agent.lastActivityAt ? formatDebugTimestamp(agent.lastActivityAt) : "-"} lastAssistant=${agent.lastAssistantMessageAt ? formatDebugTimestamp(agent.lastAssistantMessageAt) : "-"}`,
       );
       lines.push(
-        `latestPreview=${formatOpenClawValue(agent.latestPreview)} lastUser=${formatOpenClawValue(agent.lastUserMessage)}`,
+        `latestPreview=${formatDebugValue(agent.latestPreview)} lastUser=${formatDebugValue(agent.lastUserMessage)}`,
       );
       if (agent.thinkingTrace?.trim()) {
         lines.push("thinking>");
@@ -3061,12 +3089,12 @@ export function OfficeScreen({
 
     return lines.join("\n");
   }, [state.agents]);
-  const normalizedOpenClawConsoleSearch = openClawConsoleSearch
+  const normalizedDebugConsoleSearch = debugConsoleSearch
     .trim()
     .toLowerCase();
-  const filteredOpenClawLogEntries = useMemo(() => {
-    if (!normalizedOpenClawConsoleSearch) return openClawLogEntries;
-    return openClawLogEntries.filter((entry) =>
+  const filteredDebugLogEntries = useMemo(() => {
+    if (!normalizedDebugConsoleSearch) return debugLogEntries;
+    return debugLogEntries.filter((entry) =>
       [
         entry.timestamp,
         entry.eventName,
@@ -3081,61 +3109,61 @@ export function OfficeScreen({
       ]
         .join("\n")
         .toLowerCase()
-        .includes(normalizedOpenClawConsoleSearch),
+        .includes(normalizedDebugConsoleSearch),
     );
-  }, [normalizedOpenClawConsoleSearch, openClawLogEntries]);
+  }, [normalizedDebugConsoleSearch, debugLogEntries]);
   const openClawLiveStateMatchesSearch = useMemo(() => {
-    if (!normalizedOpenClawConsoleSearch) return true;
-    return openClawLiveStateText
+    if (!normalizedDebugConsoleSearch) return true;
+    return debugLiveStateText
       .toLowerCase()
-      .includes(normalizedOpenClawConsoleSearch);
-  }, [normalizedOpenClawConsoleSearch, openClawLiveStateText]);
+      .includes(normalizedDebugConsoleSearch);
+  }, [normalizedDebugConsoleSearch, debugLiveStateText]);
   const openClawConsoleExportJson = useMemo(
     () =>
       safeJsonStringify({
         exportedAt: new Date().toISOString(),
-        searchQuery: openClawConsoleSearch,
-        visibleEventCount: filteredOpenClawLogEntries.length,
-        totalEventCount: openClawLogEntries.length,
+        searchQuery: debugConsoleSearch,
+        visibleEventCount: filteredDebugLogEntries.length,
+        totalEventCount: debugLogEntries.length,
         liveStateMatchesSearch: openClawLiveStateMatchesSearch,
-        liveStateText: openClawLiveStateText,
-        events: filteredOpenClawLogEntries,
+        liveStateText: debugLiveStateText,
+        events: filteredDebugLogEntries,
       }),
     [
-      filteredOpenClawLogEntries,
-      openClawConsoleSearch,
+      filteredDebugLogEntries,
+      debugConsoleSearch,
       openClawLiveStateMatchesSearch,
-      openClawLiveStateText,
-      openClawLogEntries.length,
+      debugLiveStateText,
+      debugLogEntries.length,
     ],
   );
 
-  const handleClearOpenClawConsole = useCallback(() => {
-    setOpenClawLogEntries([]);
+  const handleClearDebugConsole = useCallback(() => {
+    setDebugLogEntries([]);
   }, []);
-  const handleCopyOpenClawConsoleJson = useCallback(async () => {
+  const handleCopyDebugConsoleJson = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(openClawConsoleExportJson);
-      setOpenClawConsoleCopyStatus("copied");
+      setDebugConsoleCopyStatus("copied");
       window.setTimeout(() => {
-        setOpenClawConsoleCopyStatus("idle");
+        setDebugConsoleCopyStatus("idle");
       }, 1800);
     } catch (error) {
-      console.error("Failed to copy OpenClaw console JSON.", error);
-      setOpenClawConsoleCopyStatus("error");
+      console.error("Failed to copy BranceClaw console JSON.", error);
+      setDebugConsoleCopyStatus("error");
       window.setTimeout(() => {
-        setOpenClawConsoleCopyStatus("idle");
+        setDebugConsoleCopyStatus("idle");
       }, 1800);
     }
   }, [openClawConsoleExportJson]);
-  const handleDownloadOpenClawConsoleJson = useCallback(() => {
+  const handleDownloadDebugConsoleJson = useCallback(() => {
     const blob = new Blob([openClawConsoleExportJson], {
       type: "application/json;charset=utf-8",
     });
     const url = window.URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `openclaw-events-${Date.now()}.json`;
+    anchor.download = `branceclaw-events-${Date.now()}.json`;
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -3179,41 +3207,13 @@ export function OfficeScreen({
     [marketplace.skillsReport],
   );
 
-  if (
-    !agentsLoaded &&
-    (!connectPromptReady ||
-      (gatewayUrl.trim().length > 0 &&
-        !shouldPromptForConnect &&
-        (!didAttemptGatewayConnect || status === "connecting")))
-  ) {
+  // ── Gateway connect screen bypassed — standalone mode seeds agents
+  //    directly from BRANCECLAW_STANDALONE_AGENTS above. ──
+  if (!agentsLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black font-mono text-[#4FC3F7]">
-        CONNECTING TO GATEWAY...
+        Loading office...
       </div>
-    );
-  }
-
-  if (
-    connectPromptReady &&
-    status === "disconnected" &&
-    !agentsLoaded &&
-    (shouldPromptForConnect || didAttemptGatewayConnect)
-  ) {
-    return (
-      <main className="min-h-screen bg-black px-4 py-10">
-        <GatewayConnectScreen
-          gatewayUrl={gatewayUrl}
-          token={token}
-          localGatewayDefaults={localGatewayDefaults}
-          status={status}
-          error={gatewayError}
-          showApprovalHint={didAttemptGatewayConnect}
-          onGatewayUrlChange={setGatewayUrl}
-          onTokenChange={setToken}
-          onUseLocalDefaults={useLocalGatewayDefaults}
-          onConnect={() => void connect()}
-        />
-      </main>
     );
   }
 
@@ -3230,10 +3230,10 @@ export function OfficeScreen({
     (agent) => agent.hasUnseenActivity,
   ).length;
   const showEmptyFleetBanner =
-    status === "connected" && agentsLoaded && state.agents.length === 0;
+    agentsLoaded && state.agents.length === 0;
   const emptyFleetMessage =
     state.error?.trim() ||
-    "Connected to the gateway, but no agents were loaded into the office.";
+    "No agents were loaded into the office.";
 
   return (
     <main className="h-full w-full overflow-hidden bg-black">
@@ -3455,38 +3455,38 @@ export function OfficeScreen({
         />
       ) : null}
 
-      {showOpenClawConsole ? (
+      {showDebugConsole ? (
         <section className="pointer-events-auto fixed bottom-3 left-3 z-30 flex w-[520px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded border border-cyan-500/25 bg-black/78 shadow-2xl backdrop-blur">
           <div className="flex items-center justify-between border-b border-cyan-500/15 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-cyan-200/80">
-            <span>OpenClaw Event Console</span>
+            <span>BranceClaw Event Console</span>
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-cyan-100/45">
                 agents {state.agents.length} | events{" "}
-                {filteredOpenClawLogEntries.length}/{openClawLogEntries.length}
+                {filteredDebugLogEntries.length}/{debugLogEntries.length}
               </span>
               <button
                 type="button"
                 onClick={() => {
-                  void handleCopyOpenClawConsoleJson();
+                  void handleCopyDebugConsoleJson();
                 }}
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
-                {openClawConsoleCopyStatus === "copied"
+                {debugConsoleCopyStatus === "copied"
                   ? "Copied"
-                  : openClawConsoleCopyStatus === "error"
+                  : debugConsoleCopyStatus === "error"
                     ? "Copy Failed"
                     : "Copy JSON"}
               </button>
               <button
                 type="button"
-                onClick={handleDownloadOpenClawConsoleJson}
+                onClick={handleDownloadDebugConsoleJson}
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
                 Download JSON
               </button>
               <button
                 type="button"
-                onClick={handleClearOpenClawConsole}
+                onClick={handleClearDebugConsole}
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
                 Clear
@@ -3494,31 +3494,31 @@ export function OfficeScreen({
               <button
                 type="button"
                 onClick={() =>
-                  setOpenClawConsoleCollapsed((previous) => !previous)
+                  setDebugConsoleCollapsed((previous) => !previous)
                 }
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
-                {openClawConsoleCollapsed ? "Expand" : "Minimize"}
+                {debugConsoleCollapsed ? "Expand" : "Minimize"}
               </button>
             </div>
           </div>
-          {!openClawConsoleCollapsed ? (
+          {!debugConsoleCollapsed ? (
             <div className="flex h-[320px] flex-col gap-3 overflow-y-auto bg-[#02090b]/96 px-3 py-2 font-mono text-[10px] leading-4">
             <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={openClawConsoleSearch}
+                  value={debugConsoleSearch}
                   onChange={(event) =>
-                    setOpenClawConsoleSearch(event.target.value)
+                    setDebugConsoleSearch(event.target.value)
                   }
                   placeholder="Search logs, payloads, thinking, user text."
                   className="min-w-0 flex-1 rounded border border-cyan-500/20 bg-black/35 px-2 py-1 text-[10px] normal-case tracking-normal text-cyan-50 placeholder:text-cyan-100/30 focus:border-cyan-400/40 focus:outline-none"
                 />
-                {openClawConsoleSearch ? (
+                {debugConsoleSearch ? (
                   <button
                     type="button"
-                    onClick={() => setOpenClawConsoleSearch("")}
+                    onClick={() => setDebugConsoleSearch("")}
                     className="rounded border border-cyan-500/20 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
                   >
                     Reset
@@ -3529,31 +3529,31 @@ export function OfficeScreen({
             {openClawLiveStateMatchesSearch ? (
               <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2">
                 <div className="mb-1 text-[9px] uppercase tracking-[0.16em] text-cyan-300/70">
-                  Live OpenClaw State
+                  Live BranceClaw State
                 </div>
                 <pre className="whitespace-pre-wrap break-words text-cyan-100/80">
-                  {renderOpenClawHighlightedText(
-                    openClawLiveStateText,
-                    openClawConsoleSearch,
+                  {renderHighlightedText(
+                    debugLiveStateText,
+                    debugConsoleSearch,
                   )}
                 </pre>
               </div>
             ) : (
               <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2 text-cyan-100/45">
-                Live OpenClaw state does not match the current search.
+                Live BranceClaw state does not match the current search.
               </div>
             )}
             <div className="text-[9px] uppercase tracking-[0.16em] text-cyan-300/70">
-              Raw OpenClaw Gateway Events
+              Raw BranceClaw Gateway Events
             </div>
-            {filteredOpenClawLogEntries.length === 0 ? (
+            {filteredDebugLogEntries.length === 0 ? (
               <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2 text-cyan-100/45">
-                {openClawLogEntries.length === 0
-                  ? "No OpenClaw gateway events received yet."
-                  : "No OpenClaw events match the current search."}
+                {debugLogEntries.length === 0
+                  ? "No BranceClaw gateway events received yet."
+                  : "No BranceClaw events match the current search."}
               </div>
             ) : (
-              filteredOpenClawLogEntries.map((entry) => {
+              filteredDebugLogEntries.map((entry) => {
                 const isUserMessage = entry.role === "user";
                 return (
                   <div
@@ -3572,9 +3572,9 @@ export function OfficeScreen({
                             : "text-cyan-300/75"
                         }`}
                       >
-                        {renderOpenClawHighlightedText(
+                        {renderHighlightedText(
                           `[${entry.timestamp}] ${entry.eventName} / ${entry.eventKind}`,
-                          openClawConsoleSearch,
+                          debugConsoleSearch,
                         )}
                       </div>
                       {entry.role ? (
@@ -3590,9 +3590,9 @@ export function OfficeScreen({
                       ) : null}
                     </div>
                     <div className="mt-1 whitespace-pre-wrap break-words text-cyan-100/55">
-                      {renderOpenClawHighlightedText(
+                      {renderHighlightedText(
                         entry.summary,
-                        openClawConsoleSearch,
+                        debugConsoleSearch,
                       )}
                     </div>
                     {entry.messageText ? (
@@ -3601,9 +3601,9 @@ export function OfficeScreen({
                           User / Message Text
                         </div>
                         <div className="mt-1 whitespace-pre-wrap break-words">
-                          {renderOpenClawHighlightedText(
+                          {renderHighlightedText(
                             entry.messageText,
-                            openClawConsoleSearch,
+                            debugConsoleSearch,
                           )}
                         </div>
                       </div>
@@ -3614,9 +3614,9 @@ export function OfficeScreen({
                           Thinking
                         </div>
                         <div className="mt-1 whitespace-pre-wrap break-words">
-                          {renderOpenClawHighlightedText(
+                          {renderHighlightedText(
                             entry.thinkingText,
-                            openClawConsoleSearch,
+                            debugConsoleSearch,
                           )}
                         </div>
                       </div>
@@ -3627,9 +3627,9 @@ export function OfficeScreen({
                           Stream
                         </div>
                         <div className="mt-1 whitespace-pre-wrap break-words">
-                          {renderOpenClawHighlightedText(
+                          {renderHighlightedText(
                             entry.streamText,
-                            openClawConsoleSearch,
+                            debugConsoleSearch,
                           )}
                         </div>
                       </div>
@@ -3640,9 +3640,9 @@ export function OfficeScreen({
                           Tool Output
                         </div>
                         <div className="mt-1 whitespace-pre-wrap break-words">
-                          {renderOpenClawHighlightedText(
+                          {renderHighlightedText(
                             entry.toolText,
-                            openClawConsoleSearch,
+                            debugConsoleSearch,
                           )}
                         </div>
                       </div>
@@ -3652,9 +3652,9 @@ export function OfficeScreen({
                         Raw Payload
                       </summary>
                       <pre className="mt-1 whitespace-pre-wrap break-words text-cyan-100/45">
-                        {renderOpenClawHighlightedText(
+                        {renderHighlightedText(
                           entry.payloadText,
-                          openClawConsoleSearch,
+                          debugConsoleSearch,
                         )}
                       </pre>
                     </details>

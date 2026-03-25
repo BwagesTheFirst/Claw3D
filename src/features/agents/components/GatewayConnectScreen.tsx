@@ -43,11 +43,11 @@ export const GatewayConnectScreen = ({
   const isLocal = useMemo(() => isLocalGatewayUrl(gatewayUrl), [gatewayUrl]);
   const localPort = useMemo(() => resolveLocalGatewayPort(gatewayUrl), [gatewayUrl]);
   const localGatewayCommand = useMemo(
-    () => `npx openclaw gateway run --bind loopback --port ${localPort} --verbose`,
+    () => `npx branceclaw gateway run --bind loopback --port ${localPort} --verbose`,
     [localPort]
   );
   const localGatewayCommandPnpm = useMemo(
-    () => `pnpm openclaw gateway run --bind loopback --port ${localPort} --verbose`,
+    () => `pnpm branceclaw gateway run --bind loopback --port ${localPort} --verbose`,
     [localPort]
   );
   const statusCopy = useMemo(() => {
@@ -176,11 +176,11 @@ export const GatewayConnectScreen = ({
       {showApprovalHint ? (
         <div className="rounded-md border border-border bg-muted/40 px-3 py-3 text-xs text-muted-foreground">
           <p className="leading-snug">
-            If the first connection attempt did not work, go to your OpenClaw computer and approve this
+            If the first connection attempt did not work, go to your BranceClaw computer and approve this
             device:
           </p>
           <code className="mt-2 block overflow-x-auto whitespace-nowrap rounded-md bg-[var(--command-bg)] px-2.5 py-2 font-mono text-[11px] text-[var(--command-fg)]">
-            openclaw devices approve --latest
+            branceclaw devices approve --latest
           </code>
         </div>
       ) : null}
@@ -227,7 +227,7 @@ export const GatewayConnectScreen = ({
             <div className="ui-input rounded-md px-3 py-3">
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground">
-                  Use token from <span className="font-mono">~/.openclaw/openclaw.json</span>.
+                  Use token from <span className="font-mono">~/.branceclaw/branceclaw.json</span>.
                 </p>
                 <p className="font-mono text-[11px] text-foreground">
                   {localGatewayDefaults.url}

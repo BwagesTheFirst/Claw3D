@@ -17,25 +17,25 @@ describe("skills remove ssh executor", () => {
   it("removes skill files via ssh", () => {
     mockedRunSshJson.mockReturnValueOnce({
       removed: true,
-      removedPath: "/home/ubuntu/.openclaw/skills/github",
-      source: "openclaw-managed",
+      removedPath: "/home/ubuntu/.claw3d/skills/github",
+      source: "claw3d-managed",
     });
 
     const result = removeSkillOverSsh({
       sshTarget: "me@host",
       request: {
         skillKey: "github",
-        source: "openclaw-managed",
-        baseDir: "/home/ubuntu/.openclaw/skills/github",
-        workspaceDir: "/home/ubuntu/.openclaw/workspace-main",
-        managedSkillsDir: "/home/ubuntu/.openclaw/skills",
+        source: "claw3d-managed",
+        baseDir: "/home/ubuntu/.claw3d/skills/github",
+        workspaceDir: "/home/ubuntu/.claw3d/workspace-main",
+        managedSkillsDir: "/home/ubuntu/.claw3d/skills",
       },
     });
 
     expect(result).toEqual({
       removed: true,
-      removedPath: "/home/ubuntu/.openclaw/skills/github",
-      source: "openclaw-managed",
+      removedPath: "/home/ubuntu/.claw3d/skills/github",
+      source: "claw3d-managed",
     });
     expect(runSshJson).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -45,10 +45,10 @@ describe("skills remove ssh executor", () => {
           "-s",
           "--",
           "github",
-          "openclaw-managed",
-          "/home/ubuntu/.openclaw/skills/github",
-          "/home/ubuntu/.openclaw/workspace-main",
-          "/home/ubuntu/.openclaw/skills",
+          "claw3d-managed",
+          "/home/ubuntu/.claw3d/skills/github",
+          "/home/ubuntu/.claw3d/workspace-main",
+          "/home/ubuntu/.claw3d/skills",
         ],
         label: "remove skill (github)",
         input: expect.stringContaining('python3 - "$1" "$2" "$3" "$4" "$5"'),

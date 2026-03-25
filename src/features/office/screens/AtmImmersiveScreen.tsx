@@ -12,7 +12,7 @@ import {
   toDateInputValue,
 } from "@/lib/office/usageAnalyticsPresentation";
 
-const PIN_STORAGE_KEY = "openclaw_atm_pin_code";
+const PIN_STORAGE_KEY = "branceclaw_atm_pin_code";
 
 const resolveInitialPinMode = (): "setup" | "verify" => {
   if (typeof window === "undefined") {
@@ -205,7 +205,7 @@ export function AtmImmersiveScreen(props: OfficeUsageAnalyticsParams) {
           <div>
             <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.32em] text-[#83fff0]/70">
               <Landmark className="h-4 w-4" />
-              OpenClaw Treasury ATM
+              BranceClaw Treasury ATM
             </div>
             <div className="mt-3 text-[13px] uppercase tracking-[0.24em] text-[#7ddfd2]/62">
               Token Usage Ledger
@@ -264,7 +264,7 @@ export function AtmImmersiveScreen(props: OfficeUsageAnalyticsParams) {
         <div className="mt-7 space-y-6">
           <SectionCard
             title="Usage Overview"
-            subtitle="Expanded OpenClaw expense data for the selected ledger window."
+            subtitle="Expanded BranceClaw expense data for the selected ledger window."
             action={
               <button
                 type="button"

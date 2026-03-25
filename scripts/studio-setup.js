@@ -15,7 +15,7 @@ const parseArgs = (argv) => {
 
 const tryReadGatewayTokenFromOpenclawCli = () => {
   try {
-    const raw = execFileSync("openclaw", ["config", "get", "gateway.auth.token"], {
+    const raw = execFileSync("branceclaw", ["config", "get", "gateway.auth.token"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     });
@@ -56,13 +56,13 @@ async function main() {
 
     const tokenDefault = tryReadGatewayTokenFromOpenclawCli();
     const tokenPrompt = tokenDefault
-      ? "Upstream Gateway Token [detected from openclaw]: "
+      ? "Upstream Gateway Token [detected from claw3d]: "
       : "Upstream Gateway Token: ";
     const tokenAnswer = await rl.question(tokenPrompt);
     const token = (tokenAnswer || tokenDefault || "").trim();
     if (!token) {
       throw new Error(
-        "Gateway token is required. Provide it, or install/openclaw so it can be auto-detected."
+        "Gateway token is required. Provide it, or install claw3d so it can be auto-detected."
       );
     }
 

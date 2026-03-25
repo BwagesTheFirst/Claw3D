@@ -1882,7 +1882,7 @@ export function RetroOffice3D({
   monitorAgentId = null,
   monitorByAgentId = {},
   githubSkill = null,
-  officeTitle = "Luke Headquarters",
+  officeTitle = "Claw3D",
   officeTitleLoaded = false,
   voiceRepliesEnabled = false,
   voiceRepliesVoiceId = null,
@@ -3838,7 +3838,7 @@ export function RetroOffice3D({
         setManualPhoneCallScenario(
           buildMockPhoneCallScenario({
             callee: "my contact",
-            message: "This is a demo call from the OpenClaw phone booth.",
+            message: "This is a demo call from the BranceClaw phone booth.",
             voiceAvailable:
               voiceRepliesLoaded &&
               Boolean(voiceRepliesVoiceId) &&

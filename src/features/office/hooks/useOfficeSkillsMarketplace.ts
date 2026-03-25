@@ -309,8 +309,8 @@ export const useOfficeSkillsMarketplace = ({
             client,
             skillKey: skill.skillKey,
             source: skill.source as
-              | "openclaw-managed"
-              | "openclaw-workspace",
+              | "claw3d-managed"
+              | "claw3d-workspace",
             baseDir: skill.baseDir,
             workspaceDir: report.workspaceDir,
             managedSkillsDir: report.managedSkillsDir,

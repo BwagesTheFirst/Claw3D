@@ -7,7 +7,7 @@ type PackagedSkillFile = {
 const TODO_BOARD_SKILL_MD = `---
 name: todo
 description: Maintain a shared workspace TODO list with blocked tasks.
-metadata: {"openclaw":{"skillKey":"todo-board"}}
+metadata: {"branceclaw":{"skillKey":"todo-board"}}
 ---
 
 # TODO Board

@@ -86,7 +86,7 @@ describe("/api/gateway/media route", () => {
       error: undefined,
     } as never);
 
-    const remotePath = "/home/ubuntu/.openclaw/images/pic.png";
+    const remotePath = "/home/ubuntu/.claw3d/images/pic.png";
     const response = await GET(
       new Request(
         `http://localhost/api/gateway/media?path=${encodeURIComponent(remotePath)}`

@@ -6,23 +6,23 @@ import { Building2, Eye, MessageSquare, Users } from "lucide-react";
 const features = [
   {
     icon: Eye,
-    title: "Watch agents work",
-    description: "See your AI agents in real time in a shared 3D office",
+    title: "Watch your agents grind",
+    description: "See BranceClaw agents working in real time across all your ventures",
   },
   {
     icon: Users,
-    title: "Manage your fleet",
-    description: "Create, configure, and monitor agents from one place",
+    title: "Command your fleet",
+    description: "Spin up, configure, and monitor agents from one HQ",
   },
   {
     icon: MessageSquare,
-    title: "Chat and approve",
-    description: "Talk to agents, approve exec commands, review their work",
+    title: "Talk and approve",
+    description: "Chat with agents, approve actions, review code and work product",
   },
   {
     icon: Building2,
-    title: "Build your office",
-    description: "Customize rooms, desks, and the whole office layout",
+    title: "Build your HQ",
+    description: "Customize your 3D command center — rooms, desks, the whole vibe",
   },
 ] as const;
 
@@ -30,14 +30,13 @@ export const WelcomeStep = () => (
   <div className="space-y-5">
     <div className="space-y-2">
       <p className="text-sm leading-relaxed text-white/80">
-        Claw3D turns your AI automation into a{" "}
-        <span className="font-medium text-white">visual workplace</span> — an
-        office where your OpenClaw agents collaborate, code, test, and execute
-        tasks in a shared 3D environment.
+        Claw3D is your{" "}
+        <span className="font-medium text-white">3D command center</span> — a
+        virtual office where your AI agents collaborate, code, build, and execute
+        tasks across all your projects in real time.
       </p>
       <p className="text-sm text-white/60">
-        This wizard will help you connect to your OpenClaw gateway and get
-        started in about two minutes.
+        Connect to your gateway and get your agents working in about two minutes.
       </p>
     </div>
 

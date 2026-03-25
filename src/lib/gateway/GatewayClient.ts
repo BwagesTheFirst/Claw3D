@@ -5,7 +5,7 @@ import {
   GatewayBrowserClient,
   clearGatewayBrowserSessionStorage,
   type GatewayHelloOk,
-} from "./openclaw/GatewayBrowserClient";
+} from "./claw3d/GatewayBrowserClient";
 import type {
   StudioGatewaySettings,
   StudioSettings,
@@ -413,7 +413,7 @@ export const syncGatewaySessionSettings = async ({
 };
 
 const doctorFixHint =
-  "Run `npx openclaw doctor --fix` on the gateway host (or `pnpm openclaw doctor --fix` in a source checkout).";
+  "Run `npx branceclaw doctor --fix` on the gateway host (or `pnpm branceclaw doctor --fix` in a source checkout).";
 
 const formatGatewayError = (error: unknown) => {
   if (error instanceof GatewayResponseError) {
@@ -615,7 +615,7 @@ export const useGatewayConnection = (
         gatewayUrl: resolveStudioProxyGatewayUrl(),
         token,
         authScopeKey: gatewayUrl,
-        clientName: "openclaw-control-ui",
+        clientName: "claw3d-control-ui",
       });
       await ensureGatewayReloadModeHotForLocalStudio({
         client,

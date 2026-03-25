@@ -25,7 +25,7 @@ type JiraIssueRecord = StandupTicketSummary & {
   assigneeEmail: string | null;
 };
 
-const OPENCLAW_CONFIG_FILENAME = "openclaw.json";
+const CLAW3D_CONFIG_FILENAME = "claw3d.json";
 
 const coerceText = (value: string | null | undefined): string => {
   return (value ?? "").replace(/\s+/g, " ").trim();
@@ -248,7 +248,7 @@ const normalizeAgentSnapshots = (agents: StandupAgentSnapshot[]): StandupAgentSn
     }))
     .filter((agent) => agent.agentId);
   if (valid.length > 0) return valid;
-  const configPath = path.join(resolveStateDir(), OPENCLAW_CONFIG_FILENAME);
+  const configPath = path.join(resolveStateDir(), CLAW3D_CONFIG_FILENAME);
   if (!fs.existsSync(configPath)) return [];
   const raw = fs.readFileSync(configPath, "utf8");
   const parsed = JSON.parse(raw) as unknown;

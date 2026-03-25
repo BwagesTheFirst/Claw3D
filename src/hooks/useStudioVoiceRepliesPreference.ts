@@ -81,8 +81,12 @@ export const useStudioVoiceRepliesPreference = ({
 
   const setEnabled = useCallback(
     (enabled: boolean) => {
+      console.log("[Voice] setEnabled called:", enabled, "gatewayUrl:", gatewayUrl);
       const gatewayKey = gatewayUrl.trim();
-      setPreference((current) => ({ ...current, enabled }));
+      setPreference((current) => {
+        console.log("[Voice] updating preference:", { ...current, enabled });
+        return { ...current, enabled };
+      });
       if (!gatewayKey) return;
       settingsCoordinator.schedulePatch(
         {

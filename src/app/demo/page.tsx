@@ -175,7 +175,7 @@ export default function DemoPage() {
     <div style={{ width: "100vw", height: "100vh", background: "#0a0a0a" }}>
       <RetroOffice3D
         agents={agents}
-        officeTitle="Claw3D"
+        officeTitle="Brance's Empire"
         officeTitleLoaded
         gatewayStatus={gatewayStatus}
         runCountByAgentId={runCountByAgentId}

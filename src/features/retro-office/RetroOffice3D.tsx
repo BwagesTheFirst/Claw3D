@@ -1882,7 +1882,7 @@ export function RetroOffice3D({
   monitorAgentId = null,
   monitorByAgentId = {},
   githubSkill = null,
-  officeTitle = "BranceClaw HQ",
+  officeTitle = "Brance's Empire",
   officeTitleLoaded = false,
   voiceRepliesEnabled = false,
   voiceRepliesVoiceId = null,
@@ -5277,7 +5277,7 @@ export function RetroOffice3D({
                     {hoveredAgent.name}
                   </div>
                   <div className="text-[10px] text-amber-600 uppercase tracking-widest">
-                    {hoveredAgent.item}
+                    {(hoveredAgent as Record<string, unknown>).role as string || hoveredAgent.item}
                   </div>
                   {/* New Idea 8: last seen timestamp. */}
                   {(() => {

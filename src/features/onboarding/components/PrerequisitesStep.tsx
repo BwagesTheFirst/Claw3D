@@ -5,19 +5,19 @@ import { CheckCircle2, ExternalLink } from "lucide-react";
 
 const prerequisites = [
   {
-    label: "BranceClaw installed",
+    label: "OpenClaw installed",
     detail: "Install via npm, pnpm, or from source",
-    link: "https://docs.branceclaw.ai",
+    link: "https://docs.openclaw.ai",
     linkLabel: "Installation docs",
   },
   {
     label: "Gateway running",
-    detail: "Start with: branceclaw gateway start",
-    command: "branceclaw gateway start",
+    detail: "Start with: openclaw gateway start",
+    command: "openclaw gateway start",
   },
   {
     label: "Gateway URL and token",
-    detail: "Found in ~/.branceclaw/branceclaw.json or your remote setup",
+    detail: "Found in ~/.openclaw/openclaw.json or your remote setup",
   },
   {
     label: "Node.js 20+",
@@ -31,7 +31,7 @@ export const PrerequisitesStep = () => (
   <div className="space-y-4">
     <p className="text-sm text-white/70">
       Make sure you have these ready before connecting. If you already have
-      BranceClaw running, you can skip this step.
+      OpenClaw running, you can skip this step.
     </p>
 
     <div className="space-y-2.5">
@@ -45,7 +45,7 @@ export const PrerequisitesStep = () => (
             <p className="text-xs font-semibold text-white">{label}</p>
             <p className="mt-0.5 text-[11px] text-white/55">{detail}</p>
             {"command" in rest ? (
-              <code className="mt-1.5 block rounded bg-black/40 px-2 py-1 font-mono text-[11px] text-amber-400">
+              <code className="mt-1.5 block rounded bg-black/40 px-2 py-1 font-mono text-[11px] text-emerald-400">
                 {rest.command}
               </code>
             ) : null}
@@ -54,7 +54,7 @@ export const PrerequisitesStep = () => (
                 href={rest.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-amber-400 hover:text-amber-300"
+                className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:text-emerald-300"
               >
                 {rest.linkLabel ?? "Learn more"}
                 <ExternalLink className="h-3 w-3" />
@@ -68,19 +68,19 @@ export const PrerequisitesStep = () => (
     <p className="text-[11px] text-white/40">
       Need help? Check{" "}
       <a
-        href="https://docs.branceclaw.ai"
+        href="https://docs.openclaw.ai"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-amber-400/70 hover:text-amber-300"
+        className="text-emerald-400/70 hover:text-emerald-300"
       >
-        docs.branceclaw.ai
+        docs.openclaw.ai
       </a>{" "}
       or{" "}
       <a
         href="https://discord.com/invite/clawd"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-amber-400/70 hover:text-amber-300"
+        className="text-emerald-400/70 hover:text-emerald-300"
       >
         join Discord
       </a>

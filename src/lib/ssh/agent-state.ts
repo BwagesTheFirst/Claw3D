@@ -30,7 +30,7 @@ if not agent_id:
 if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}", agent_id):
   raise SystemExit(f"Invalid agentId: {agent_id}")
 
-base = pathlib.Path.home() / ".claw3d"
+base = pathlib.Path.home() / ".openclaw"
 trash_root = base / "trash" / "studio-delete-agent"
 stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 trash_dir = trash_root / f"{stamp}-{agent_id}-{uuid.uuid4()}"
@@ -73,7 +73,7 @@ if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}", agent_id):
 if not trash_dir_raw:
   raise SystemExit("trashDir is required.")
 
-base = pathlib.Path.home() / ".claw3d"
+base = pathlib.Path.home() / ".openclaw"
 trash_dir = pathlib.Path(trash_dir_raw).expanduser()
 
 try:

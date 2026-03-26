@@ -127,21 +127,21 @@ const buildFallbackMetadata = (skill: SkillStatusEntry): SkillMarketplaceMetadat
   const source = skill.source.trim();
   const seed = hashString(`${normalizedKey}:${source}`);
   const category =
-    skill.bundled || source === "claw3d-bundled"
+    skill.bundled || source === "openclaw-bundled"
       ? "Built-in"
-      : source === "claw3d-managed"
+      : source === "openclaw-managed"
         ? "Installed"
-        : source === "claw3d-workspace"
+        : source === "openclaw-workspace"
           ? "Workspace"
-          : source === "claw3d-extra"
+          : source === "openclaw-extra"
             ? "Community"
             : "Automation";
   const trustLabel =
-    skill.bundled || source === "claw3d-bundled"
+    skill.bundled || source === "openclaw-bundled"
       ? "Verified"
-      : source === "claw3d-managed"
+      : source === "openclaw-managed"
         ? "Managed"
-        : source === "claw3d-workspace"
+        : source === "openclaw-workspace"
           ? "Workspace"
           : "Community";
   return {
@@ -149,7 +149,7 @@ const buildFallbackMetadata = (skill: SkillStatusEntry): SkillMarketplaceMetadat
     tagline: skill.description.trim() || `${titleCaseWords(skill.name)} capability pack.`,
     trustLabel,
     capabilities: buildFallbackCapabilities(skill),
-    featured: skill.bundled || source === "claw3d-managed",
+    featured: skill.bundled || source === "openclaw-managed",
     rating: 4.2 + (seed % 7) / 10,
     installs: 400 + (seed % 9500),
   };

@@ -71,8 +71,8 @@ describe("skills remove route", () => {
       status: 0,
       stdout: JSON.stringify({
         removed: true,
-        removedPath: "/home/ubuntu/.claw3d/skills/github",
-        source: "claw3d-managed",
+        removedPath: "/home/ubuntu/.openclaw/skills/github",
+        source: "openclaw-managed",
       }),
       stderr: "",
       error: undefined,
@@ -84,10 +84,10 @@ describe("skills remove route", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           skillKey: "github",
-          source: "claw3d-managed",
-          baseDir: "/home/ubuntu/.claw3d/skills/github",
-          workspaceDir: "/home/ubuntu/.claw3d/workspace-main",
-          managedSkillsDir: "/home/ubuntu/.claw3d/skills",
+          source: "openclaw-managed",
+          baseDir: "/home/ubuntu/.openclaw/skills/github",
+          workspaceDir: "/home/ubuntu/.openclaw/workspace-main",
+          managedSkillsDir: "/home/ubuntu/.openclaw/skills",
         }),
       })
     );
@@ -106,7 +106,7 @@ describe("skills remove route", () => {
         "-s",
         "--",
         "github",
-        "claw3d-managed",
+        "openclaw-managed",
       ])
     );
   });
@@ -126,7 +126,7 @@ describe("skills remove route", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           skillKey: "github",
-          source: "claw3d-workspace",
+          source: "openclaw-workspace",
           baseDir: skillDir,
           workspaceDir,
           managedSkillsDir,
@@ -143,7 +143,7 @@ describe("skills remove route", () => {
     expect(body.result).toEqual({
       removed: true,
       removedPath: skillDir,
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
     });
     expect(fs.existsSync(skillDir)).toBe(false);
   });

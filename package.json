@@ -1,6 +1,6 @@
 {
   "name": "claw3d",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -9,7 +9,7 @@
     "start": "node server/index.js",
     "lint": "eslint .",
     "cleanup:ux-artifacts": "node scripts/cleanup-ux-artifacts.mjs",
-    "sync:gateway-client": "node scripts/sync-claw3d-gateway-client.ts",
+    "sync:gateway-client": "node scripts/sync-openclaw-gateway-client.ts",
     "studio:setup": "node scripts/studio-setup.js",
     "smoke:dev-server": "node scripts/smoke-dev-server.mjs",
     "typecheck": "tsc --noEmit",

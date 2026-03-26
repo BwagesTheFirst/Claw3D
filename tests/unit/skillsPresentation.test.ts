@@ -21,7 +21,7 @@ import {
 const createSkill = (overrides: Partial<SkillStatusEntry>): SkillStatusEntry => ({
   name: "skill",
   description: "",
-  source: "claw3d-workspace",
+  source: "openclaw-workspace",
   bundled: false,
   filePath: "/tmp/workspace/skill/SKILL.md",
   baseDir: "/tmp/workspace/skill",
@@ -41,10 +41,10 @@ describe("skills presentation helpers", () => {
   it("groups skills by source with stable ordering", () => {
     const groups = groupSkillsBySource([
       createSkill({ name: "other", source: "custom-source" }),
-      createSkill({ name: "installed", source: "claw3d-managed" }),
-      createSkill({ name: "workspace", source: "claw3d-workspace" }),
-      createSkill({ name: "bundled", source: "claw3d-bundled", bundled: true }),
-      createSkill({ name: "extra", source: "claw3d-extra" }),
+      createSkill({ name: "installed", source: "openclaw-managed" }),
+      createSkill({ name: "workspace", source: "openclaw-workspace" }),
+      createSkill({ name: "bundled", source: "openclaw-bundled", bundled: true }),
+      createSkill({ name: "extra", source: "openclaw-extra" }),
     ]);
 
     expect(groups.map((group) => group.id)).toEqual([
@@ -76,7 +76,7 @@ describe("skills presentation helpers", () => {
       "Missing tools: playwright",
       "Missing one-of tools (install any): chromium | chrome",
       "Missing env vars (set in gateway env): GITHUB_TOKEN",
-      "Missing config values (set in claw3d.json): browser.enabled",
+      "Missing config values (set in openclaw.json): browser.enabled",
       "Requires OS: Linux",
     ]);
   });
@@ -146,7 +146,7 @@ describe("skills presentation helpers", () => {
     expect(
       isBundledBlockedSkill(
         createSkill({
-          source: "claw3d-bundled",
+          source: "openclaw-bundled",
           bundled: true,
           eligible: false,
         })
@@ -209,14 +209,14 @@ describe("skills presentation helpers", () => {
   });
 
   it("marks only gateway-managed and workspace skill sources as removable", () => {
-    expect(canRemoveSkill(createSkill({ source: "claw3d-managed" }))).toBe(true);
-    expect(canRemoveSkill(createSkill({ source: "claw3d-workspace" }))).toBe(true);
+    expect(canRemoveSkill(createSkill({ source: "openclaw-managed" }))).toBe(true);
+    expect(canRemoveSkill(createSkill({ source: "openclaw-workspace" }))).toBe(true);
     expect(canRemoveSkill(createSkill({ source: "agents-skills-personal" }))).toBe(false);
     expect(canRemoveSkill(createSkill({ source: "agents-skills-project" }))).toBe(false);
-    expect(canRemoveSkill(createSkill({ source: "claw3d-bundled", bundled: true }))).toBe(
+    expect(canRemoveSkill(createSkill({ source: "openclaw-bundled", bundled: true }))).toBe(
       false
     );
-    expect(canRemoveSkill(createSkill({ source: "claw3d-extra" }))).toBe(false);
+    expect(canRemoveSkill(createSkill({ source: "openclaw-extra" }))).toBe(false);
   });
 
   it("derives agent access mode from allowlist shape", () => {

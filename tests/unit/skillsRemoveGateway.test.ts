@@ -42,17 +42,17 @@ describe("skills remove gateway", () => {
       client: { call } as unknown as GatewayClient,
       request: {
         skillKey: "todo-board",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         baseDir: "/home/openclaw/workspace-demo/skills/todo-board",
         workspaceDir: "/home/openclaw/workspace-demo",
-        managedSkillsDir: "/home/openclaw/.claw3d/skills",
+        managedSkillsDir: "/home/openclaw/.openclaw/skills",
       },
     });
 
     expect(result).toEqual({
       removed: true,
       removedPath: "/home/openclaw/workspace-demo/skills/todo-board",
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
     });
     expect(call).toHaveBeenCalledWith("agents.create", {
       name: expect.stringContaining("Skill Remover"),
@@ -112,16 +112,16 @@ describe("skills remove gateway", () => {
       client: { call } as unknown as GatewayClient,
       request: {
         skillKey: "github",
-        source: "claw3d-managed",
-        baseDir: "/home/openclaw/.claw3d/skills/github",
+        source: "openclaw-managed",
+        baseDir: "/home/openclaw/.openclaw/skills/github",
         workspaceDir: "/home/openclaw/workspace-demo",
-        managedSkillsDir: "/home/openclaw/.claw3d/skills",
+        managedSkillsDir: "/home/openclaw/.openclaw/skills",
       },
     });
 
     expect(call).toHaveBeenCalledWith("agents.create", {
       name: expect.stringContaining("Skill Remover"),
-      workspace: "/home/openclaw/.claw3d/skills",
+      workspace: "/home/openclaw/.openclaw/skills",
     });
   });
 });

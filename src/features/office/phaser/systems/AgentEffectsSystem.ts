@@ -29,7 +29,7 @@ type AvatarState = {
   lastTargetKey: string;
 };
 
-const THOUGHTS = ["coffee", "gamepad", "zzz", "idea", "music"] as const;
+const THOUGHTS = ["☕", "🎮", "💤", "💡", "🎵"] as const;
 
 const stateColor = (state: OfficeAgentPresence["state"]) => {
   if (state === "working") return 0x47c773;
@@ -213,7 +213,7 @@ export class AgentEffectsSystem {
     stateIcon.setDepth(9_000);
     stateIcon.setOrigin(0.5, 0.5);
     const thoughtIcon = this.scene.add.text(80, 58, "", {
-      fontFamily: "var(--font-mono)",
+      fontFamily: "Arial, sans-serif",
       fontSize: "10px",
       color: "#f4e8bb",
       backgroundColor: "rgba(20,30,40,0.55)",

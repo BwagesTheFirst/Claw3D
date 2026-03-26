@@ -18,12 +18,12 @@ describe("server studio upstream gateway settings", () => {
     }
   });
 
-  it("falls back to claw3d.json token/port when studio settings are missing", async () => {
-    tempDir = makeTempDir("studio-upstream-claw3d-defaults");
+  it("falls back to openclaw.json token/port when studio settings are missing", async () => {
+    tempDir = makeTempDir("studio-upstream-openclaw-defaults");
     process.env.OPENCLAW_STATE_DIR = tempDir;
 
     fs.writeFileSync(
-      path.join(tempDir, "claw3d.json"),
+      path.join(tempDir, "openclaw.json"),
       JSON.stringify({ gateway: { port: 18790, auth: { token: "tok" } } }, null, 2),
       "utf8"
     );
@@ -34,7 +34,7 @@ describe("server studio upstream gateway settings", () => {
     expect(settings.token).toBe("tok");
   });
 
-  it("keeps a configured url and fills token from claw3d.json when missing", async () => {
+  it("keeps a configured url and fills token from openclaw.json when missing", async () => {
     tempDir = makeTempDir("studio-upstream-url-keep");
     process.env.OPENCLAW_STATE_DIR = tempDir;
 
@@ -45,7 +45,7 @@ describe("server studio upstream gateway settings", () => {
       "utf8"
     );
     fs.writeFileSync(
-      path.join(tempDir, "claw3d.json"),
+      path.join(tempDir, "openclaw.json"),
       JSON.stringify({ gateway: { port: 18789, auth: { token: "tok-local" } } }, null, 2),
       "utf8"
     );

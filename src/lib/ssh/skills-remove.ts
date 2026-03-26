@@ -28,8 +28,8 @@ if not managed_skills_dir_raw:
   raise SystemExit("managedSkillsDir is required.")
 
 allowed_sources = {
-  "claw3d-managed",
-  "claw3d-workspace",
+  "openclaw-managed",
+  "openclaw-workspace",
 }
 if source not in allowed_sources:
   raise SystemExit(f"Unsupported skill source for removal: {source}")
@@ -38,7 +38,7 @@ base_dir = pathlib.Path(base_dir_raw).expanduser().resolve(strict=False)
 workspace_dir = pathlib.Path(workspace_dir_raw).expanduser().resolve(strict=False)
 managed_skills_dir = pathlib.Path(managed_skills_dir_raw).expanduser().resolve(strict=False)
 
-if source == "claw3d-managed":
+if source == "openclaw-managed":
   allowed_root = managed_skills_dir
 else:
   allowed_root = (workspace_dir / "skills").resolve(strict=False)

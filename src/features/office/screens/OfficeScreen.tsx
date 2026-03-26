@@ -141,6 +141,15 @@ import {
 import type { StandupAgentSnapshot } from "@/lib/office/standup/types";
 import type { SkillStatusEntry } from "@/lib/skills/types";
 
+const SPEECH_NOISE_WORDS = new Set([
+  "complete", "completed", "done", "ok", "okay", "yes", "no", "sure",
+  "alright", "acknowledged", "understood", "noted", "thanks", "thank you",
+  "working", "idle", "ready", "starting", "stopping", "stopped", "running",
+  "success", "failed", "error", "task complete", "job done", "finish",
+  "finished", "processing", "executing", "waiting", "pending", "null",
+  "undefined", "true", "false",
+]);
+
 const stringToColor = (str: string) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -520,6 +529,19 @@ const normalizeOfficeFeedText = (
 ): string => {
   const normalized = (value ?? "").replace(/\s+/g, " ").trim();
   if (!normalized) return "";
+
+  // Filter out JSON fragments / tool results
+  if (normalized.startsWith("{") || normalized.startsWith("[")) return "";
+  if (normalized.startsWith("<") && normalized.includes(">")) return "";
+
+  // Filter single-word or two-word noise
+  const lower = normalized.toLowerCase().replace(/[.!?,]+$/, "");
+  if (SPEECH_NOISE_WORDS.has(lower)) return "";
+
+  // Filter very short responses (less than 4 words)
+  const wordCount = lower.split(/\s+/).filter(Boolean).length;
+  if (wordCount < 4) return "";
+
   if (
     typeof maxChars !== "number" ||
     !Number.isFinite(maxChars) ||
@@ -527,6 +549,7 @@ const normalizeOfficeFeedText = (
   ) {
     return normalized;
   }
+
   if (normalized.length <= maxChars) return normalized;
   return `${normalized.slice(0, Math.max(0, maxChars - 1)).trimEnd()}…`;
 };
@@ -1790,18 +1813,20 @@ export function OfficeScreen({
       initialized = true;
       if (previous.ts === previewTs && previous.text === previewText) continue;
       if (previewTs < previous.ts) continue;
-      setFeedEvents((prev) =>
-        [
-          {
-            id: agent.agentId,
-            name: agent.name || "Agent",
-            text: previewText,
-            ts: previewTs,
-            kind: "reply" as const,
-          },
-          ...prev,
-        ].slice(0, 6),
-      );
+      if (normalizeOfficeFeedText(previewText)) {
+        setFeedEvents((prev) =>
+          [
+            {
+              id: agent.agentId,
+              name: agent.name || "Agent",
+              text: previewText,
+              ts: previewTs,
+              kind: "reply" as const,
+            },
+            ...prev,
+          ].slice(0, 6),
+        );
+      }
     }
 
     if (!initialized) {

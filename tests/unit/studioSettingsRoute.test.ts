@@ -9,11 +9,11 @@ import { GET, PUT } from "@/app/api/studio/route";
 const makeTempDir = (name: string) => fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
 
 describe("studio settings route", () => {
-  const priorStateDir = process.env.CLAW3D_STATE_DIR;
+  const priorStateDir = process.env.OPENCLAW_STATE_DIR;
   let tempDir: string | null = null;
 
   afterEach(() => {
-    process.env.CLAW3D_STATE_DIR = priorStateDir;
+    process.env.OPENCLAW_STATE_DIR = priorStateDir;
     if (tempDir) {
       fs.rmSync(tempDir, { recursive: true, force: true });
       tempDir = null;
@@ -22,7 +22,7 @@ describe("studio settings route", () => {
 
   it("GET returns default settings when missing", async () => {
     tempDir = makeTempDir("studio-settings-get-default");
-    process.env.CLAW3D_STATE_DIR = tempDir;
+    process.env.OPENCLAW_STATE_DIR = tempDir;
 
     const response = await GET();
     const body = (await response.json()) as {
@@ -36,11 +36,11 @@ describe("studio settings route", () => {
     expect(body.settings?.version).toBe(1);
   });
 
-  it("GET returns local gateway defaults from claw3d.json", async () => {
+  it("GET returns local gateway defaults from openclaw.json", async () => {
     tempDir = makeTempDir("studio-settings-get-local-defaults");
-    process.env.CLAW3D_STATE_DIR = tempDir;
+    process.env.OPENCLAW_STATE_DIR = tempDir;
     fs.writeFileSync(
-      path.join(tempDir, "claw3d.json"),
+      path.join(tempDir, "openclaw.json"),
       JSON.stringify({ gateway: { port: 18791, auth: { token: "local-token" } } }, null, 2),
       "utf8"
     );
@@ -64,7 +64,7 @@ describe("studio settings route", () => {
 
   it("PUT returns 400 for non-object JSON payload", async () => {
     tempDir = makeTempDir("studio-settings-put-invalid");
-    process.env.CLAW3D_STATE_DIR = tempDir;
+    process.env.OPENCLAW_STATE_DIR = tempDir;
 
     const response = await PUT({
       json: async () => "nope",
@@ -78,7 +78,7 @@ describe("studio settings route", () => {
 
   it("PUT persists a patch and GET returns merged settings", async () => {
     tempDir = makeTempDir("studio-settings-put-persist");
-    process.env.CLAW3D_STATE_DIR = tempDir;
+    process.env.OPENCLAW_STATE_DIR = tempDir;
 
     const patch = {
       gateway: { url: "ws://example.test:1234", token: "t" },

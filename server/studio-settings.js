@@ -3,7 +3,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const LEGACY_STATE_DIRNAMES = [".clawdbot", ".moltbot"];
-const NEW_STATE_DIRNAME = ".claw3d";
+const NEW_STATE_DIRNAME = ".openclaw";
 
 const resolveUserPath = (input) => {
   const trimmed = String(input ?? "").trim();
@@ -27,7 +27,6 @@ const resolveDefaultHomeDir = () => {
 
 const resolveStateDir = (env = process.env) => {
   const override =
-    env.CLAW3D_STATE_DIR?.trim() ||
     env.OPENCLAW_STATE_DIR?.trim() ||
     env.MOLTBOT_STATE_DIR?.trim() ||
     env.CLAWDBOT_STATE_DIR?.trim();
@@ -58,14 +57,14 @@ const readJsonFile = (filePath) => {
 };
 
 const DEFAULT_GATEWAY_URL = "ws://localhost:18789";
-const CLAW3D_CONFIG_FILENAME = "claw3d.json";
+const OPENCLAW_CONFIG_FILENAME = "openclaw.json";
 
 const isRecord = (value) => Boolean(value && typeof value === "object");
 
-const readClaw3dGatewayDefaults = (env = process.env) => {
+const readOpenclawGatewayDefaults = (env = process.env) => {
   try {
     const stateDir = resolveStateDir(env);
-    const configPath = path.join(stateDir, CLAW3D_CONFIG_FILENAME);
+    const configPath = path.join(stateDir, OPENCLAW_CONFIG_FILENAME);
     const parsed = readJsonFile(configPath);
     if (!isRecord(parsed)) return null;
     const gateway = isRecord(parsed.gateway) ? parsed.gateway : null;
@@ -90,7 +89,7 @@ const loadUpstreamGatewaySettings = (env = process.env) => {
   const url = typeof gateway?.url === "string" ? gateway.url.trim() : "";
   const token = typeof gateway?.token === "string" ? gateway.token.trim() : "";
   if (!token) {
-    const defaults = readClaw3dGatewayDefaults(env);
+    const defaults = readOpenclawGatewayDefaults(env);
     if (defaults) {
       return {
         url: url || defaults.url,

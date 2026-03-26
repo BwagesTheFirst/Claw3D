@@ -3,8 +3,8 @@ import os from "node:os";
 import path from "node:path";
 
 const LEGACY_STATE_DIRNAMES = [".clawdbot", ".moltbot"] as const;
-const NEW_STATE_DIRNAME = ".claw3d";
-const CONFIG_FILENAME = "claw3d.json";
+const NEW_STATE_DIRNAME = ".openclaw";
+const CONFIG_FILENAME = "openclaw.json";
 const LEGACY_CONFIG_FILENAMES = ["clawdbot.json", "moltbot.json"] as const;
 
 const resolveDefaultHomeDir = (homedir: () => string = os.homedir): string => {

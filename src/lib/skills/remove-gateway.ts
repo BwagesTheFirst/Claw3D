@@ -53,11 +53,11 @@ const buildSkillRemovalMessage = (params: {
 };
 
 const resolveRemovalWorkspace = (request: SkillRemoveRequest): string => {
-  return request.source === "claw3d-managed" ? request.managedSkillsDir : request.workspaceDir;
+  return request.source === "openclaw-managed" ? request.managedSkillsDir : request.workspaceDir;
 };
 
 const resolveAllowedRoot = (request: SkillRemoveRequest): string => {
-  return request.source === "claw3d-managed"
+  return request.source === "openclaw-managed"
     ? request.managedSkillsDir
     : `${request.workspaceDir.replace(/[\\/]+$/, "")}/skills`;
 };

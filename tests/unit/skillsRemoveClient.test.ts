@@ -16,13 +16,13 @@ describe("skills remove client", () => {
     vi.mocked(removeSkillViaGatewayAgent).mockResolvedValueOnce({
       removed: true,
       removedPath: "/tmp/workspace/skills/github",
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
     });
 
     const result = await removeSkillFromGateway({
       client: { call: vi.fn() } as never,
       skillKey: " github ",
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
       baseDir: " /tmp/workspace/skills/github ",
       workspaceDir: " /tmp/workspace ",
       managedSkillsDir: " /tmp/managed ",
@@ -32,7 +32,7 @@ describe("skills remove client", () => {
       client: expect.any(Object),
       request: {
         skillKey: "github",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         baseDir: "/tmp/workspace/skills/github",
         workspaceDir: "/tmp/workspace",
         managedSkillsDir: "/tmp/managed",
@@ -41,7 +41,7 @@ describe("skills remove client", () => {
     expect(result).toEqual({
       removed: true,
       removedPath: "/tmp/workspace/skills/github",
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
     });
   });
 
@@ -50,7 +50,7 @@ describe("skills remove client", () => {
       removeSkillFromGateway({
         client: { call: vi.fn() } as never,
         skillKey: " ",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         baseDir: "/tmp/workspace/skills/github",
         workspaceDir: "/tmp/workspace",
         managedSkillsDir: "/tmp/managed",
@@ -61,7 +61,7 @@ describe("skills remove client", () => {
       removeSkillFromGateway({
         client: { call: vi.fn() } as never,
         skillKey: "github",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         baseDir: " ",
         workspaceDir: "/tmp/workspace",
         managedSkillsDir: "/tmp/managed",

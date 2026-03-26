@@ -1882,7 +1882,7 @@ export function RetroOffice3D({
   monitorAgentId = null,
   monitorByAgentId = {},
   githubSkill = null,
-  officeTitle = "Brance's Empire",
+  officeTitle = "Luke Headquarters",
   officeTitleLoaded = false,
   voiceRepliesEnabled = false,
   voiceRepliesVoiceId = null,
@@ -3838,7 +3838,7 @@ export function RetroOffice3D({
         setManualPhoneCallScenario(
           buildMockPhoneCallScenario({
             callee: "my contact",
-            message: "This is a demo call from the BranceClaw phone booth.",
+            message: "This is a demo call from the OpenClaw phone booth.",
             voiceAvailable:
               voiceRepliesLoaded &&
               Boolean(voiceRepliesVoiceId) &&
@@ -5277,7 +5277,7 @@ export function RetroOffice3D({
                     {hoveredAgent.name}
                   </div>
                   <div className="text-[10px] text-amber-600 uppercase tracking-widest">
-                    {(hoveredAgent as Record<string, unknown>).role as string || hoveredAgent.item}
+                    {hoveredAgent.item}
                   </div>
                   {/* New Idea 8: last seen timestamp. */}
                   {(() => {

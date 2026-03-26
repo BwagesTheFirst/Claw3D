@@ -53,7 +53,7 @@ const resolveAndValidateLocalMediaPath = (raw: string): { resolved: string; mime
 
   const resolved = path.resolve(expanded);
 
-  const allowedRoot = path.join(os.homedir(), ".claw3d");
+  const allowedRoot = path.join(os.homedir(), ".openclaw");
   const allowedPrefix = `${allowedRoot}${path.sep}`;
   if (!(resolved === allowedRoot || resolved.startsWith(allowedPrefix))) {
     throw new Error(`Refusing to read media outside ${allowedRoot}`);
@@ -69,15 +69,15 @@ const validateRemoteMediaPath = (raw: string): { remotePath: string; mime: strin
     throw new Error("path must be absolute or start with ~/");
   }
 
-  // Remote side enforces ~/.claw3d; this guard lets Studio on macOS request
-  // /home/ubuntu/.claw3d/... without tripping local homedir checks.
+  // Remote side enforces ~/.openclaw; this guard lets Studio on macOS request
+  // /home/ubuntu/.openclaw/... without tripping local homedir checks.
   const normalized = trimmed.replaceAll("\\\\", "/");
   const inOpenclaw =
-    normalized === "~/.claw3d" ||
-    normalized.startsWith("~/.claw3d/") ||
-    normalized.includes("/.claw3d/");
+    normalized === "~/.openclaw" ||
+    normalized.startsWith("~/.openclaw/") ||
+    normalized.includes("/.openclaw/");
   if (!inOpenclaw) {
-    throw new Error("Refusing to read remote media outside ~/.claw3d");
+    throw new Error("Refusing to read remote media outside ~/.openclaw");
   }
 
   return { remotePath: trimmed, mime };
@@ -119,7 +119,7 @@ except FileNotFoundError:
   raise SystemExit(3)
 
 home = pathlib.Path.home().resolve()
-allowed = (home / ".claw3d").resolve()
+allowed = (home / ".openclaw").resolve()
 if resolved != allowed and allowed not in resolved.parents:
   print(json.dumps({"error": f"Refusing to read media outside {allowed}"}))
   raise SystemExit(4)

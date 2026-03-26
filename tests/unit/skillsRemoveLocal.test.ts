@@ -19,7 +19,7 @@ describe("skills remove local", () => {
 
     const result = removeSkillLocally({
       skillKey: "github",
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
       baseDir: skillDir,
       workspaceDir,
       managedSkillsDir,
@@ -28,7 +28,7 @@ describe("skills remove local", () => {
     expect(result).toEqual({
       removed: true,
       removedPath: skillDir,
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
     });
     expect(fs.existsSync(skillDir)).toBe(false);
   });
@@ -41,7 +41,7 @@ describe("skills remove local", () => {
     expect(() =>
       removeSkillLocally({
         skillKey: "github",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         baseDir: outsideDir,
         workspaceDir,
         managedSkillsDir,
@@ -58,7 +58,7 @@ describe("skills remove local", () => {
     expect(() =>
       removeSkillLocally({
         skillKey: "github",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         baseDir: workspaceSkillsRoot,
         workspaceDir,
         managedSkillsDir,
@@ -75,7 +75,7 @@ describe("skills remove local", () => {
     expect(() =>
       removeSkillLocally({
         skillKey: "tmp",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         baseDir: nonSkillDir,
         workspaceDir,
         managedSkillsDir,

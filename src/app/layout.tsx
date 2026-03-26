@@ -3,8 +3,8 @@ import { Bebas_Neue, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Brance's Empire",
-  description: "3D command center for AI agents — by Dino Killers.",
+  title: "Claw3D",
+  description: "Focused operator studio for the OpenClaw gateway.",
 };
 
 const display = Bebas_Neue({

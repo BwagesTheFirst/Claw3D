@@ -88,7 +88,7 @@ const AgentCreateModalContent = ({
               value={name}
               onChange={(event) => setName(event.target.value)}
               className={`mt-1 ${fieldClassName}`}
-              placeholder="BranceClaw agent"
+              placeholder="My agent"
             />
           </label>
           <div className="-mt-2 text-[11px] text-muted-foreground">

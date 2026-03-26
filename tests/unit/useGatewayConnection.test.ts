@@ -21,7 +21,7 @@ const setupAndImportHook = async (gatewayUrl: string | null) => {
     authScopeKey: null,
   };
 
-  vi.doMock("../../src/lib/gateway/claw3d/GatewayBrowserClient", () => {
+  vi.doMock("../../src/lib/gateway/openclaw/GatewayBrowserClient", () => {
     class GatewayBrowserClient {
       connected = false;
       private opts: {

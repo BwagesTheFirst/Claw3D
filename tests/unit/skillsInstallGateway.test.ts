@@ -42,16 +42,16 @@ describe("skills install gateway", () => {
       client: { call } as unknown as GatewayClient,
       request: {
         packageId: "todo-board",
-        source: "claw3d-workspace",
+        source: "openclaw-workspace",
         workspaceDir: "/home/openclaw/workspace-demo",
-        managedSkillsDir: "/home/openclaw/.claw3d/skills",
+        managedSkillsDir: "/home/openclaw/.openclaw/skills",
       },
     });
 
     expect(result).toEqual({
       installed: true,
       installedPath: "/home/openclaw/workspace-demo/skills/todo-board",
-      source: "claw3d-workspace",
+      source: "openclaw-workspace",
       skillKey: "todo-board",
     });
     expect(call).toHaveBeenCalledWith("agents.create", {
@@ -110,9 +110,9 @@ describe("skills install gateway", () => {
         client: { call } as unknown as GatewayClient,
         request: {
           packageId: "todo-board",
-          source: "claw3d-workspace",
+          source: "openclaw-workspace",
           workspaceDir: "/home/openclaw/workspace-demo",
-          managedSkillsDir: "/home/openclaw/.claw3d/skills",
+          managedSkillsDir: "/home/openclaw/.openclaw/skills",
         },
       })
     ).rejects.toThrow("chat failed");

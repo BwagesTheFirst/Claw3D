@@ -35,8 +35,8 @@ export type OnboardingState = {
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "welcome",
-    title: "Welcome to Brance's Empire",
-    description: "Your AI workforce headquarters",
+    title: "Welcome to Claw3D",
+    description: "Your AI office in 3D",
     skippable: false,
   },
   {
@@ -48,7 +48,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "connect",
     title: "Connect Your Gateway",
-    description: "Link to your BranceClaw instance",
+    description: "Link to your OpenClaw instance",
     skippable: false,
   },
   {

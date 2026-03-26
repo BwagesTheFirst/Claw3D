@@ -26,7 +26,7 @@ const PACKAGED_SKILLS: PackagedSkillDefinition[] = [
     skillKey: "todo-board",
     name: "todo",
     description: "Maintain a shared workspace TODO list with blocked tasks.",
-    installSource: "claw3d-workspace",
+    installSource: "openclaw-workspace",
     creatorName: "iamlukethedev",
     creatorUrl: "http://x.com/iamlukethedev/",
   },
@@ -47,7 +47,7 @@ export const buildPackagedSkillStatusEntry = (
 ): SkillStatusEntry => ({
   name: skill.name,
   description: skill.description,
-  source: "claw3d-extra",
+  source: "openclaw-extra",
   bundled: false,
   filePath: "",
   baseDir: "",
